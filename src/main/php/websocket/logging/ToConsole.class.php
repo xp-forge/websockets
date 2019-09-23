@@ -1,5 +1,6 @@
 <?php namespace websocket\logging;
 
+use util\Objects;
 use util\cmd\Console;
 
 class ToConsole extends Sink {
@@ -17,22 +18,20 @@ class ToConsole extends Sink {
   /**
    * Writes a log entry
    *
-   * @param  string $kind
-   * @param  util.URI $uri
-   * @param  string $status
-   * @param  ?lang.Throwable $error Optional error
+   * @param  int $client
+   * @param  string $opcode
+   * @param  var $result
    * @return void
    */
-  public function log($kind, $uri, $status, $error= null) {
+  public function log($client, $opcode, $result) {
     $this->writer->writeLinef(
-      "  \e[33m[%s %d %.3fkB]\e[0m %s %s %s %s",
+      "  \e[33m[%s %d %.3fkB]\e[0m #%d %s %s",
       date('Y-m-d H:i:s'),
       getmypid(),
       memory_get_usage() / 1024,
-      $status,
-      $kind,
-      $uri->path().(($query= $uri->query()) ? '?'.$query : ''),
-      $error ? $error->toString() : ''
+      $client,
+      $opcode,
+      Objects::stringOf($result)
     );
   }
 }

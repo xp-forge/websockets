@@ -12,13 +12,12 @@ abstract class Sink {
   /**
    * Writes a log entry
    *
-   * @param  string $kind
-   * @param  util.URI $uri
-   * @param  string $status
-   * @param  ?lang.Throwable $error Optional error
+   * @param  int $client
+   * @param  string $opcode
+   * @param  var $result
    * @return void
    */
-  public abstract function log($kind, $uri, $status, $error= null);
+  public abstract function log($client, $opcode, $result);
 
   /** @return string */
   public function target() { return nameof($this); }

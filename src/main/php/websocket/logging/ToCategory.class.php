@@ -1,5 +1,7 @@
 <?php namespace websocket\logging;
 
+use lang\Throwable;
+
 class ToCategory extends Sink {
   private $cat;
 
@@ -14,18 +16,16 @@ class ToCategory extends Sink {
   /**
    * Writes a log entry
    *
-   * @param  string $kind
-   * @param  util.URI $uri
-   * @param  string $status
-   * @param  ?lang.Throwable $error Optional error
+   * @param  int $client
+   * @param  string $opcode
+   * @param  var $result
    * @return void
    */
-  public function log($kind, $uri, $status, $error= null) {
-    $uri= $uri->path().(($query= $uri->query()) ? '?'.$query : '');
-    if ($error) {
-      $this->cat->warn($status, $kind, $uri, $error);
+  public function log($client, $opcode, $result) {
+    if ($result instanceof Throwable) {
+      $this->cat->warn('#'.$client, $opcode, $result);
     } else {
-      $this->cat->info($status, $kind, $uri);
+      $this->cat->info('#'.$client, $opcode, $result);
     }
   }
 }

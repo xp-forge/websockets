@@ -2,6 +2,7 @@
 
 use io\File;
 use lang\IllegalArgumentException;
+use util\Objects;
 
 /**
  * Logfile sink writing to a file
@@ -27,22 +28,20 @@ class ToFile extends Sink {
   /**
    * Writes a log entry
    *
-   * @param  string $kind
-   * @param  util.URI $uri
-   * @param  string $status
-   * @param  ?lang.Throwable $error Optional error
+   * @param  int $client
+   * @param  string $opcode
+   * @param  var $result
    * @return void
    */
-  public function log($kind, $uri, $status, $error= null) {
+  public function log($client, $opcode, $result) {
     $line= sprintf(
-      "[%s %d %.3fkB] %s %s %s %s\n",
+      "[%s %d %.3fkB] #%d %s -> %s\n",
       date('Y-m-d H:i:s'),
       getmypid(),
       memory_get_usage() / 1024,
-      $status,
-      $kind,
-      $uri->path().(($query= $uri->query()) ? '?'.$query : ''),
-      $error ? $error->toString() : ''
+      $client,
+      $opcode,
+      Objects::stringOf($result)
     );
     file_put_contents($this->file, $line, FILE_APPEND | LOCK_EX);
   }

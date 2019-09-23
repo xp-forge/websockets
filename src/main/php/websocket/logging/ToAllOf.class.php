@@ -11,7 +11,7 @@ class ToAllOf extends Sink {
   /**
    * Creates a sink writing to all given other sinks
    *
-   * @param  (websocket.logging.Sink|util.log.LogCategory|function(string, util.URI, string, ?lang.Throwable): void)... $arg
+   * @param  (websocket.logging.Sink|util.log.LogCategory|function(int, string, var): void)... $arg
    */
   public function __construct(... $args) {
     foreach ($args as $arg) {
@@ -40,15 +40,14 @@ class ToAllOf extends Sink {
   /**
    * Writes a log entry
    *
-   * @param  string $kind
-   * @param  util.URI $uri
-   * @param  string $status
-   * @param  ?lang.Throwable $error Optional error
+   * @param  int $client
+   * @param  string $opcode
+   * @param  var $result
    * @return void
    */
-  public function log($kind, $uri, $status, $error= null) {
+  public function log($client, $opcode, $result) {
     foreach ($this->sinks as $sink) {
-      $sink->log($kind, $uri, $status, $error);
+      $sink->log($client, $opcode, $result);
     }
   }
 }

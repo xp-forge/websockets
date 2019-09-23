@@ -8,6 +8,7 @@ use util\log\LogCategory;
 use websocket\logging\ToCategory;
 
 class ToCategoryTest extends TestCase {
+  const ID = 42;
 
   #[@test]
   public function can_create() {
@@ -17,7 +18,7 @@ class ToCategoryTest extends TestCase {
   #[@test]
   public function log() {
     $buf= new BufferedAppender();
-    (new ToCategory((new LogCategory())->withAppender($buf)))->log('TEXT', new URI('/ws'), '+OK');
+    (new ToCategory((new LogCategory())->withAppender($buf)))->log(self::ID, 'TEXT', '+OK');
 
     $this->assertNotEquals('', $buf->getBuffer());
   }
@@ -25,7 +26,7 @@ class ToCategoryTest extends TestCase {
   #[@test]
   public function log_with_error() {
     $buf= new BufferedAppender();
-    (new ToCategory((new LogCategory())->withAppender($buf)))->log('TEXT', new URI('/ws'), '-ERR', new IllegalArgumentException('Test'));
+    (new ToCategory((new LogCategory())->withAppender($buf)))->log(self::ID, 'TEXT', new IllegalArgumentException('Test'));
 
     $this->assertNotEquals('', $buf->getBuffer());
   }
