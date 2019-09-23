@@ -7,6 +7,8 @@ use websocket\protocol\Connection;
 use websocket\protocol\Opcodes;
 
 class Protocol implements Handler {
+  const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+
   private $listener, $dispatch, $logging;
 
   public function __construct($listener, $dispatch, $logging) {
@@ -31,7 +33,7 @@ class Protocol implements Handler {
 
         // Hash websocket key and well-known GUID
         $key= $headers['Sec-WebSocket-Key'][0];
-        $accept= base64_encode(sha1($key.'258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
+        $accept= base64_encode(sha1($key.self::GUID, true));
         $socket->write(sprintf(
           "HTTP/1.1 101 Switching Protocols\r\n".
           "Date: %s\r\n".
