@@ -7,7 +7,27 @@ use util\cmd\Console;
 use websocket\Dispatch;
 use websocket\Environment;
 use websocket\Listeners;
+use xp\runtime\Help;
 
+/**
+ * WebSockets server
+ * =================
+ *
+ * - Run a websocket listener
+ *   ```sh
+ *   $ xp ws com.example.web.Chat
+ *   ```
+ * - Pass arguments
+ *   ```sh
+ *   $ xp ws com.example.web.Chat redis://localhost
+ *   ```
+ * The address the server listens to can be supplied via *-a {host}[:{port}]*.
+ * The profile can be changed via *-p {profile}* (and can be anything!). One
+ * or more configuration sources may be passed via *-c {file.ini|dir}*.
+ *
+ * The server log is sent to standard output by default. It can be redirected
+ * to a file via *-l /path/to/logfile.log*.
+ */
 class Runner {
 
   private static function server($address, $backlog= 10) {
@@ -32,10 +52,7 @@ class Runner {
    * @return int
    */
   public static function main($args) {
-    if (empty($args)) {
-      Console::writeLine('Usage: xp ws [-c {file.ini|dir}] [-a {host}[:{port}] [-p {profile}] {package.Listener}');
-      return 2;
-    }
+    if (empty($args)) return Help::main([strtr(self::class, '\\', '.')]);
 
     $events= new Events();
 
