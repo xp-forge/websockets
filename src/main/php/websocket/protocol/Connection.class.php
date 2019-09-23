@@ -11,31 +11,36 @@ use util\Bytes;
 class Connection {
   const MAXLENGTH = 0x8000000;
 
-  private $socket, $id, $uri, $headers;
+  private $socket, $id, $listener, $headers;
 
   /**
    * Creates a new connection
    *
    * @param  peer.Socket $socket
    * @param  int $id
-   * @param  util.URI $uri
+   * @param  callable $listener
    * @param  [:var] $headers
    */
-  public function __construct($socket, $id, $uri, $headers= []) {
+  public function __construct($socket, $id, $listener, $headers= []) {
     $this->socket= $socket;
     $this->id= $id;
-    $this->uri= $uri;
+    $this->listener= $listener;
     $this->headers= $headers;
   }
 
   /** @return int */
   public function id() { return $this->id; }
 
-  /** @return util.URI */
-  public function uri() { return $this->uri; }
+  /** @return callable */
+  public function listener() { return $this->listener; }
 
   /** @return [:var] */
   public function headers() { return $this->headers; }
+
+  public function on($payload) {
+    $f= $this->listener;
+    return $f($this, $payload);
+  }
 
   /**
    * Reads a certain number of bytes

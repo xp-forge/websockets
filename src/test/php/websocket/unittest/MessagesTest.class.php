@@ -38,7 +38,7 @@ class MessagesTest extends TestCase {
 
     // Simulate handshake
     $channel->connect();
-    $listeners->connections[self::ID]= new Connection($channel, self::ID, new URI('/ws'), []);
+    $listeners->connections[self::ID]= new Connection($channel, self::ID, $listener, []);
 
     return new Messages($listeners, $this->log);
   }
@@ -48,11 +48,11 @@ class MessagesTest extends TestCase {
     $invoked= [];
     $c= new Channel($type."\x04Test");
     $p= $this->fixture($c, function($conn, $message) use(&$invoked) {
-      $invoked[]= [$conn->uri()->path() => $message];
+      $invoked[]= [$conn->id() => $message];
     });
     $p->next($c, self::ID);
 
-    $this->assertEquals([['/ws' => $expected]], $invoked);
+    $this->assertEquals([[self::ID => $expected]], $invoked);
   }
 
   #[@test]
@@ -121,13 +121,13 @@ class MessagesTest extends TestCase {
     $logged= [];
     $c= new Channel("\x81\x04Test");
     $this->log= new Logging(newinstance(Sink::class, [], [
-      'log' => function($kind, $uri, $status, $error= null) use(&$logged) {
-        $logged[]= [$kind, $uri->path(), $status, $error ? nameof($error).':'.$error->getMessage() : null];
+      'log' => function($client, $opcode, $result) use(&$logged) {
+        $logged[]= [$client, $opcode, typeof($result)->getName()];
       }
     ]));
     $this->fixture($c, function($conn, $message) { throw new IllegalStateException('Test'); })->next($c, self::ID);
 
-    $this->assertEquals([['TEXT', '/ws', self::ID, 'lang.IllegalStateException:Test']], $logged);
+    $this->assertEquals([[self::ID, 'TEXT', 'lang.IllegalStateException']], $logged);
   }
 
   #[@test]
@@ -135,13 +135,13 @@ class MessagesTest extends TestCase {
     $logged= [];
     $c= new Channel("\x81\x04Test");
     $this->log= new Logging(newinstance(Sink::class, [], [
-      'log' => function($kind, $uri, $status, $error= null) use(&$logged) {
-        $logged[]= [$kind, $uri->path(), $status, $error ? nameof($error).':'.$error->getMessage() : null];
+      'log' => function($client, $opcode, $result) use(&$logged) {
+        $logged[]= [$client, $opcode, typeof($result)->getName()];
       }
     ]));
     $this->fixture($c, function($conn, $message) { throw new \Exception('Test'); })->next($c, self::ID);
 
-    $this->assertEquals([['TEXT', '/ws', self::ID, 'lang.XPException:Test']], $logged);
+    $this->assertEquals([[self::ID, 'TEXT', 'lang.XPException']], $logged);
   }
 
   #[@test]

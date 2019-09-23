@@ -61,4 +61,36 @@ class ListenersTest extends TestCase {
     $fixture= $this->fixture();
     $this->assertEquals(1, $fixture->compareTo($this->fixture()));
   }
+
+  #[@test, @values([
+  #  ['/listen', 'listen'],
+  #  ['/test', 'test'],
+  #  ['/test/', 'test'],
+  #  ['/test/chat', 'test'],
+  #  ['/testing', 'catch-all'],
+  #  ['/prod', 'catch-all'],
+  #])]
+  public function listener($path, $expected) {
+    $listeners= $this->fixture(function($events) {
+      return [
+        '/listen' => newinstance(Listener::class, [], [
+          'message' => function($conn, $payload) { return 'listen'; }
+        ]),
+        '/test'   => function($conn, $payload) { return 'test'; },
+        '/'       => function($conn, $payload) { return 'catch-all'; }
+      ];
+    });
+    $listener= $listeners->listener($path);
+    $this->assertEquals($expected, $listener(null, 'Test'));
+  }
+
+  #[@test]
+  public function no_catch_all() {
+    $listeners= $this->fixture(function($events) {
+      return [
+        '/test'   => function($conn, $payload) { return 'test'; },
+      ];
+    });
+    $this->assertNull($listeners->listener('/prod'));
+  }
 }

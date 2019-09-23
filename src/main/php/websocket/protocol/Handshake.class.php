@@ -1,7 +1,5 @@
 <?php namespace websocket\protocol;
 
-use util\URI;
-
 /**
  * Websocket handshake
  *
@@ -31,7 +29,24 @@ class Handshake {
     $version= isset($headers['Sec-WebSocket-Version']) ? $headers['Sec-WebSocket-Version'][0] : -1;
     switch ($version) {
       case 13:
-        $uri= new URI($path);
+        if (null === ($listener= $this->listeners->listener($path))) {
+          $message= 'This service does not listen on '.$path;
+          $error= sprintf(
+            "HTTP/1.1 400 Bad Request\r\n".
+            "Date: %s\r\n".
+            "Host: %s\r\n".
+            "Connection: close\r\n".
+            "Content-Type: text/plain\r\n".
+            "Content-Length: %d\r\n".
+            "\r\n".
+            "%s",
+            $date,
+            $host,
+            strlen($message),
+            $message
+          );
+          break;
+        }
 
         // Hash websocket key and well-known GUID
         $key= $headers['Sec-WebSocket-Key'][0];
@@ -49,8 +64,8 @@ class Handshake {
           $accept
         ));
         $socket->setTimeout(600.0);
-        $this->listeners->connections[$i]= new Connection($socket, $i, $uri, $headers);
-        $this->logging->log('OPEN('.$method.')', $uri, $i);
+        $this->listeners->connections[$i]= new Connection($socket, $i, $listener, $headers);
+        $this->logging->log($i, $method.' '.$path, 101);
         return Messages::class;
 
       case -1:

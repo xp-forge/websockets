@@ -75,6 +75,31 @@ class HandshakeTest extends TestCase {
   }
 
   #[@test]
+  public function cannot_dispatch() {
+    $c= new Channel(
+      "GET /chat HTTP/1.1\r\n".
+      "Host: localhost\r\n".
+      "Sec-WebSocket-Version: 13\r\n".
+      "Sec-WebSocket-Key: VW5pdHRlc\r\n".
+      "\r\n"
+    );
+    $this->fixture()->next($c->connect(), 0);
+
+    $this->assertHttp(
+      "HTTP/1.1 400 Bad Request\r\n".
+      "Date: [A-Za-z]+, [0-9]+ [A-Za-z]+ [0-9]+ [0-9]+:[0-9]+:[0-9]+ GMT\r\n".
+      "Host: localhost\r\n".
+      "Connection: close\r\n".
+      "Content-Type: text/plain\r\n".
+      "Content-Length: 37\r\n".
+      "\r\n".
+      "This service does not listen on /chat",
+      $c->out
+    );
+    $this->assertFalse($c->isConnected());
+  }
+
+  #[@test]
   public function unsupported_ws_version() {
     $c= new Channel(
       "GET /ws HTTP/1.1\r\n".

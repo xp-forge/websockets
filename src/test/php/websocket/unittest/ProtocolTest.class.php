@@ -9,6 +9,7 @@ use xp\ws\Events;
 use xp\ws\Protocol;
 
 class ProtocolTest extends TestCase {
+  const ID = 42;
   const HANDSHAKE = "GET /ws HTTP/1.1\r\nHost: localhost\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: VW5pdHRlc\r\n\r\n";
 
   private $log, $events;
@@ -39,13 +40,13 @@ class ProtocolTest extends TestCase {
   public function handshake_only() {
     $invoked= [];
     $p= $this->fixture(function($conn, $message) use(&$invoked) {
-      $invoked[]= [$conn->uri()->path() => $message];
+      $invoked[]= [$conn->id() => $message];
     });
 
     $c= (new Channel(self::HANDSHAKE))->connect();
-    $p->open($this->events, $c, 0);
-    $p->data($this->events, $c, 0);
-    $p->close($this->events, $c, 0);
+    $p->open($this->events, $c, self::ID);
+    $p->data($this->events, $c, self::ID);
+    $p->close($this->events, $c, self::ID);
 
     $this->assertEquals([], $invoked);
   }
@@ -54,15 +55,15 @@ class ProtocolTest extends TestCase {
   public function complete_flow() {
     $invoked= [];
     $p= $this->fixture(function($conn, $message) use(&$invoked) {
-      $invoked[]= [$conn->uri()->path() => $message];
+      $invoked[]= [$conn->id() => $message];
     });
 
     $c= (new Channel(self::HANDSHAKE."\x81\x04Test"))->connect();
-    $p->open($this->events, $c, 0);
-    $p->data($this->events, $c, 0);
-    $p->data($this->events, $c, 0);
-    $p->close($this->events, $c, 0);
+    $p->open($this->events, $c, self::ID);
+    $p->data($this->events, $c, self::ID);
+    $p->data($this->events, $c, self::ID);
+    $p->close($this->events, $c, self::ID);
 
-    $this->assertEquals([['/ws' => 'Test']], $invoked);
+    $this->assertEquals([[self::ID => 'Test']], $invoked);
   }
 }

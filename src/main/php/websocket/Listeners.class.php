@@ -10,7 +10,7 @@ use lang\Value;
  */
 abstract class Listeners implements Value {
   protected $environment;
-  private $dispatch= null;
+  private $paths= [];
   public $connections= [];
 
   /**
@@ -21,14 +21,30 @@ abstract class Listeners implements Value {
    */
   public function __construct($environment, $events) {
     $this->environment= $environment;
-    $this->dispatch= new Dispatch($this->serve($events) ?: []);
+    foreach ($this->serve($events) ?: [] as $path => $listener) {
+      if ('/' === $path) {
+        $this->paths['#.#']= self::cast($listener);
+      } else {
+        $this->paths['#^'.$path.'(/?|/.+)$#']= self::cast($listener);
+      }
+    }
   }
 
   /** @return websocket.Environment */
   public function environment() { return $this->environment; }
 
-  /** @return websocket.Dispatch */
-  public function dispatch() { return $this->dispatch; }
+  /**
+   * Finds listener for a given path, returning NULL otherwise
+   *
+   * @param  string $path
+   * @return ?callable
+   */
+  public function listener($path) {
+    foreach ($this->paths as $pattern => $listener) {
+      if (preg_match($pattern, $path)) return $listener;
+    }
+    return null;
+  }
 
   /**
    * Cast listeners
