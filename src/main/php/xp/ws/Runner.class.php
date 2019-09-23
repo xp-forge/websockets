@@ -93,12 +93,11 @@ class Runner {
 
     $environment= new Environment($profile, $config, $args, $logging ?: '-');
     $logging= $environment->logging();
-    $listener= $class->newInstance($environment);
-    $dispatch= new Dispatch($listener->serve($events));
+    $listener= $class->newInstance($environment, $events);
 
     $server= self::server($address);
-    $events->add($server, function($events, $socket, $i) use($listener, $dispatch, $logging) {
-      $events->add($socket->accept(), new Protocol($listener, $dispatch, $logging));
+    $events->add($server, function($events, $socket, $i) use($listener, $logging) {
+      $events->add($socket->accept(), new Protocol($listener, $logging));
     });
 
     Console::writeLine("\e[33m@", $server->toString(), ")\e[0m");

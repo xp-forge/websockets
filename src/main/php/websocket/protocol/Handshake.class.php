@@ -11,11 +11,10 @@ use util\URI;
 class Handshake {
   const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
-  private $listener, $dispatch, $logging;
+  private $listeners, $logging;
 
-  public function __construct($listener, $dispatch, $logging) {
-    $this->listener= $listener;
-    $this->dispatch= $dispatch;
+  public function __construct($listeners, $logging) {
+    $this->listeners= $listeners;
     $this->logging= $logging;
   }
 
@@ -50,7 +49,7 @@ class Handshake {
           $accept
         ));
         $socket->setTimeout(600.0);
-        $this->listener->connections[$i]= new Connection($socket, $i, $uri, $headers);
+        $this->listeners->connections[$i]= new Connection($socket, $i, $uri, $headers);
         $this->logging->log('OPEN('.$method.')', $uri, $i);
         return Messages::class;
 

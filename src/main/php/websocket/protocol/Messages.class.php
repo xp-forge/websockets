@@ -4,16 +4,15 @@ use lang\Throwable;
 use util\Bytes;
 
 class Messages {
-  private $listener, $dispatch, $logging;
+  private $listeners, $logging;
 
-  public function __construct($listener, $dispatch, $logging) {
-    $this->listener= $listener;
-    $this->dispatch= $dispatch;
+  public function __construct($listeners, $logging) {
+    $this->listeners= $listeners;
     $this->logging= $logging;
   }
 
   public function next($socket, $i) {
-    $conn= $this->listener->connections[$i];
+    $conn= $this->listeners->connections[$i];
     foreach ($conn->receive() as $opcode => $payload) {
       try {
         switch ($opcode) {
@@ -25,12 +24,12 @@ class Messages {
               break;
             }
 
-            $this->dispatch->dispatch($conn, $payload);
+            $this->listeners->dispatch()->dispatch($conn, $payload);
             $this->logging->log('TEXT', $conn->uri(), $i);
             break;
 
           case Opcodes::BINARY:
-            $this->dispatch->dispatch($conn, new Bytes($payload));
+            $this->listeners->dispatch()->dispatch($conn, new Bytes($payload));
             $this->logging->log('BINARY', $conn->uri(), $i);
             break;
 
@@ -73,6 +72,6 @@ class Messages {
   }
 
   public function end($socket, $i) {
-    unset($this->listener->connections[$i]);
+    unset($this->listeners->connections[$i]);
   }
 }

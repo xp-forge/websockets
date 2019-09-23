@@ -19,16 +19,16 @@ class HandshakeTest extends TestCase {
    * Creates a fixture
    *
    * @param  function(web.protocol.Connection, string): var $listener
-   * @return web.protocol.Http
+   * @return websocket.protocol.Handshake
    */
   private function fixture($listener= null) {
-    $listeners= newinstance(Listeners::class, [new Environment('test')], [
+    $listeners= newinstance(Listeners::class, [new Environment('test'), null], [
       'serve' => function($events) use($listener) {
         return ['/ws' => $listener ?: function($conn, $message) { }];
       }
     ]);
 
-    return new Handshake($listeners, new Dispatch($listeners->serve(null)), $this->log);
+    return new Handshake($listeners, $this->log);
   }
 
   /**

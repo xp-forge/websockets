@@ -25,11 +25,12 @@ class MessagesTest extends TestCase {
   /**
    * Creates a fixture
    *
+   * @param  websocket.unittest.Channel $channel
    * @param  function(web.protocol.Connection, string): var $listener
-   * @return web.protocol.Http
+   * @return websocket.protocol.Messages
    */
   private function fixture($channel, $listener= null) {
-    $listeners= newinstance(Listeners::class, [new Environment('test')], [
+    $listeners= newinstance(Listeners::class, [new Environment('test'), null], [
       'serve' => function($events) use($listener) {
         return ['/ws' => $listener ?: function($conn, $message) { }];
       }
@@ -39,7 +40,7 @@ class MessagesTest extends TestCase {
     $channel->connect();
     $listeners->connections[self::ID]= new Connection($channel, self::ID, new URI('/ws'), []);
 
-    return new Messages($listeners, new Dispatch($listeners->serve(null)), $this->log);
+    return new Messages($listeners, $this->log);
   }
 
   #[@test, @values([["\x81", 'Test'], ["\x82", new Bytes('Test')]])]

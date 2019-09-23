@@ -26,13 +26,13 @@ class ProtocolTest extends TestCase {
    * @return web.protocol.Http
    */
   private function fixture($listener= null) {
-    $listeners= newinstance(Listeners::class, [new Environment('test')], [
+    $listeners= newinstance(Listeners::class, [new Environment('test'), $this->events], [
       'serve' => function($events) use($listener) {
         return ['/ws' => $listener ?: function($conn, $message) { }];
       }
     ]);
 
-    return new Protocol($listeners, new Dispatch($listeners->serve($this->events)), $this->log);
+    return new Protocol($listeners, $this->log);
   }
 
   #[@test]

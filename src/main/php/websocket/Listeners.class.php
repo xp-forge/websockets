@@ -10,16 +10,25 @@ use lang\Value;
  */
 abstract class Listeners implements Value {
   protected $environment;
+  private $dispatch= null;
   public $connections= [];
 
   /**
    * Creates a new listeners instance
    *
    * @param  websocket.Environment $environment
+   * @param  xp.ws.Events $events
    */
-  public function __construct($environment) {
+  public function __construct($environment, $events) {
     $this->environment= $environment;
+    $this->dispatch= new Dispatch($this->serve($events) ?: []);
   }
+
+  /** @return websocket.Environment */
+  public function environment() { return $this->environment; }
+
+  /** @return websocket.Dispatch */
+  public function dispatch() { return $this->dispatch; }
 
   /**
    * Cast listeners

@@ -6,10 +6,10 @@ use websocket\protocol\Messages;
 class Protocol implements Handler {
   private $flow;
 
-  public function __construct($listener, $dispatch, $logging) {
+  public function __construct($listener, $logging) {
     $this->flow= [
-      Handshake::class => new Handshake($listener, $dispatch, $logging),
-      Messages::class  => new Messages($listener, $dispatch, $logging)
+      Handshake::class => new Handshake($listener, $logging),
+      Messages::class  => new Messages($listener, $logging)
     ];
   }
 

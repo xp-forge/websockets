@@ -16,7 +16,7 @@ class ListenersTest extends TestCase {
    * @return web.Listeners
    */
   private function fixture($serve= null) {
-    return newinstance(Listeners::class, [new Environment('test')], [
+    return newinstance(Listeners::class, [new Environment('test'), null], [
       'serve' => $serve ?: function($events) { /* Implementation irrelevant for this test */ }
     ]);
   }
