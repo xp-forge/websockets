@@ -37,6 +37,12 @@ class Connection {
   /** @return [:var] */
   public function headers() { return $this->headers; }
 
+  /**
+   * Invokes listener and returns its result
+   *
+   * @param  string|util.Bytes $payload
+   * @return var
+   */
   public function on($payload) {
     $f= $this->listener;
     return $f($this, $payload);
