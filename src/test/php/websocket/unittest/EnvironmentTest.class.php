@@ -38,7 +38,10 @@ class EnvironmentTest extends \unittest\TestCase {
   public function composite_properties() {
     $prop= [new Properties('inject.ini'), new Properties('global/inject.ini')];
     $environment= new Environment('dev', [new RegisteredPropertySource('inject', $prop[0]), new RegisteredPropertySource('inject', $prop[1])]);
-    $this->assertEquals(new CompositeProperties($prop), $environment->properties('inject'));
+
+    $composite= $environment->properties('inject');
+    $this->assertInstanceOf(CompositeProperties::class, $composite);
+    $this->assertEquals(2, $composite->length());
   }
 
   #[@test]
