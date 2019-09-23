@@ -5,8 +5,8 @@ use peer\Socket;
 use peer\SocketException;
 
 class Channel extends Socket {
-  public $connected= false;
   public $in= '', $out;
+  private $connected= false, $timeout= 60.0;
 
   public function __construct($in= '') {
     $this->in= $in;
@@ -19,6 +19,14 @@ class Channel extends Socket {
     }
     $this->connected= true;
     return $this;
+  }
+
+  public function setTimeout($timeout) {
+    $this->timeout= $timeout;
+  }
+
+  public function getTimeout() {
+    return $this->timeout;
   }
 
   public function isConnected() {

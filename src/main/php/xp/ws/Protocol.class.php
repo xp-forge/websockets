@@ -1,6 +1,7 @@
 <?php namespace xp\ws;
 
 use lang\Throwable;
+use util\Bytes;
 use util\URI;
 use websocket\protocol\Connection;
 use websocket\protocol\Opcodes;
@@ -24,14 +25,15 @@ class Protocol implements Handler {
 
     $date= gmdate('D, d M Y H:i:s T');
     $host= isset($headers['Host']) ? $headers['Host'][0] : $socket->localEndpoint()->getAddress();
-    switch (isset($headers['Sec-WebSocket-Version']) ? $headers['Sec-WebSocket-Version'][0] : null) {
+    $version= isset($headers['Sec-WebSocket-Version']) ? $headers['Sec-WebSocket-Version'][0] : null;
+    switch ($version) {
       case '13': 
 
         // Hash websocket key and well-known GUID
         $key= $headers['Sec-WebSocket-Key'][0];
         $accept= base64_encode(sha1($key.'258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
         $socket->write(sprintf(
-          "HTTP/1.1 101 Switching protocols\r\n".
+          "HTTP/1.1 101 Switching Protocols\r\n".
           "Date: %s\r\n".
           "Host: %s\r\n".
           "Connection: Upgrade\r\n".
@@ -47,7 +49,20 @@ class Protocol implements Handler {
         break;
       
       default:
-        $socket->write(sprintf("HTTP/1.1 400 Bad Request\r\nDate: %s\r\nHost: %s\r\n\r\n", $date, $host));
+        $message= 'Unsupported websocket version '.$version;
+        $socket->write(sprintf(
+          "HTTP/1.1 400 Bad Request\r\n".
+          "Date: %s\r\n".
+          "Host: %s\r\n".
+          "Connection: close\r\n".
+          "Content-Type: text/plain\r\n".
+          "Content-Length: %d\r\n".
+          "\r\n%s",
+          $date,
+          $host,
+          strlen($message),
+          $message
+        ));
         $socket->close();
         break;
     }

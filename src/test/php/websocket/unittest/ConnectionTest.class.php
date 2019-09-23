@@ -86,7 +86,7 @@ class ConnectionTest extends TestCase {
     $this->receive($channel);
 
     $this->assertEquals('', $channel->out);
-    $this->assertFalse($channel->connected, 'Channel closed');
+    $this->assertFalse($channel->isConnected(), 'Channel closed');
   }
 
   #[@test]
@@ -96,7 +96,7 @@ class ConnectionTest extends TestCase {
 
     // 0x80 | 0x08 (CLOSE), 2 bytes, pack("n", 1002)
     $this->assertEquals("\x88\x02\x03\xea", $channel->out);
-    $this->assertFalse($channel->connected, 'Channel closed');
+    $this->assertFalse($channel->isConnected(), 'Channel closed');
   }
 
   #[@test]
@@ -106,7 +106,7 @@ class ConnectionTest extends TestCase {
 
     // 0x80 | 0x08 (CLOSE), 2 bytes, pack("n", 1003)
     $this->assertEquals("\x88\x02\x03\xeb", $channel->out);
-    $this->assertFalse($channel->connected, 'Channel closed');
+    $this->assertFalse($channel->isConnected(), 'Channel closed');
   }
 
   #[@test]
