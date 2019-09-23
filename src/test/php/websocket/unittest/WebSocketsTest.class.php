@@ -60,7 +60,9 @@ class WebSocketsTest extends TestCase {
   #[@test]
   public function handle_connect_reads_handshake() {
     $c= (new Channel(self::HANDSHAKE))->connect();
-    $this->fixture()->open($this->events, $c, 0);
+    $p= $this->fixture();
+    $p->open($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
 
     $this->assertHttp(
       "HTTP/1.1 101 Switching Protocols\r\n".
@@ -76,8 +78,10 @@ class WebSocketsTest extends TestCase {
 
   #[@test]
   public function handle_connect_sets_timeout() {
-    $c= new Channel(self::HANDSHAKE);
-    $this->fixture()->open($this->events, $c->connect(), 0);
+    $c= (new Channel(self::HANDSHAKE))->connect();
+    $p= $this->fixture();
+    $p->open($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
 
     $this->assertEquals(600.0, $c->getTimeout());
   }
@@ -92,7 +96,9 @@ class WebSocketsTest extends TestCase {
       "Sec-WebSocket-Version: 99\r\n".
       "\r\n"
     );
-    $this->fixture()->open($this->events, $c->connect(), 0);
+    $p= $this->fixture();
+    $p->open($this->events, $c->connect(), 0);
+    $p->data($this->events, $c, 0);
 
     $this->assertHttp(
       "HTTP/1.1 400 Bad Request\r\n".
@@ -117,6 +123,7 @@ class WebSocketsTest extends TestCase {
     $c= (new Channel(self::HANDSHAKE.$type."\x04Test"))->connect();
     $p->open($this->events, $c, 0);
     $p->data($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
 
     $this->assertEquals([['/ws' => $expected]], $invoked);
   }
@@ -127,6 +134,7 @@ class WebSocketsTest extends TestCase {
 
     $c= (new Channel(self::HANDSHAKE."\x81\x04\xfcber"))->connect();
     $p->open($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
     $p->data($this->events, $c, 0);
 
     $this->assertEquals(new Bytes("\x88\x02\x03\xef"), new Bytes(substr($c->out, -4)));
@@ -140,6 +148,7 @@ class WebSocketsTest extends TestCase {
     $c= (new Channel(self::HANDSHAKE."\x89\x04Test"))->connect();
     $p->open($this->events, $c, 0);
     $p->data($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
 
     $this->assertEquals(new Bytes("\x8a\x04Test"), new Bytes(substr($c->out, -6)));
   }
@@ -150,6 +159,7 @@ class WebSocketsTest extends TestCase {
 
     $c= (new Channel(self::HANDSHAKE."\x8a\x04Test"))->connect();
     $p->open($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
     $out= $c->out;
     $p->data($this->events, $c, 0);
 
@@ -163,6 +173,7 @@ class WebSocketsTest extends TestCase {
     $c= (new Channel(self::HANDSHAKE."\x88\x00"))->connect();
     $p->open($this->events, $c, 0);
     $p->data($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
 
     $this->assertEquals(new Bytes("\x88\x02\x03\xe8"), new Bytes(substr($c->out, -4)));
     $this->assertFalse($c->isConnected());
@@ -174,6 +185,7 @@ class WebSocketsTest extends TestCase {
 
     $c= (new Channel(self::HANDSHAKE."\x88\x06\x0b\xb8Test"))->connect();
     $p->open($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
     $p->data($this->events, $c, 0);
 
     $this->assertEquals(new Bytes("\x88\x06\x0b\xb8Test"), new Bytes(substr($c->out, -8)));
@@ -187,6 +199,7 @@ class WebSocketsTest extends TestCase {
     $c= (new Channel(self::HANDSHAKE."\x88\x06\x03\xecTest"))->connect();
     $p->open($this->events, $c, 0);
     $p->data($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
 
     $this->assertEquals(new Bytes("\x88\x02\x03\xea"), new Bytes(substr($c->out, -4)));
     $this->assertFalse($c->isConnected());
@@ -198,6 +211,7 @@ class WebSocketsTest extends TestCase {
 
     $c= (new Channel(self::HANDSHAKE."\x88\x06\x03\xec\xfcber"))->connect();
     $p->open($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
     $p->data($this->events, $c, 0);
 
     $this->assertEquals(new Bytes("\x88\x02\x03\xef"), new Bytes(substr($c->out, -4)));
@@ -217,8 +231,12 @@ class WebSocketsTest extends TestCase {
     $c= (new Channel(self::HANDSHAKE."\x81\x04Test"))->connect();
     $p->open($this->events, $c, 0);
     $p->data($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
 
-    $this->assertEquals([['TEXT', '/ws', 'ERR', 'lang.IllegalStateException:Test']], $logged);
+    $this->assertEquals(
+      [['OPEN(GET)', '/ws', 0, null], ['TEXT', '/ws', 0, 'lang.IllegalStateException:Test']],
+      $logged
+    );
   }
 
   #[@test]
@@ -234,7 +252,11 @@ class WebSocketsTest extends TestCase {
     $c= (new Channel(self::HANDSHAKE."\x81\x04Test"))->connect();
     $p->open($this->events, $c, 0);
     $p->data($this->events, $c, 0);
+    $p->data($this->events, $c, 0);
 
-    $this->assertEquals([['TEXT', '/ws', 'ERR', 'lang.XPException:Test']], $logged);
+    $this->assertEquals(
+      [['OPEN(GET)', '/ws', 0, null], ['TEXT', '/ws', 0, 'lang.XPException:Test']],
+      $logged
+    );
   }
 }
