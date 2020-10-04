@@ -1,40 +1,36 @@
 <?php namespace websocket\unittest;
 
-use io\File;
-use io\FileUtil;
-use io\Folder;
-use lang\ElementNotFoundException;
-use lang\Environment as System;
-use util\CompositeProperties;
-use util\Properties;
-use util\RegisteredPropertySource;
+use io\{File, FileUtil, Folder};
+use lang\{ElementNotFoundException, Environment as System};
+use unittest\{Expect, Test, Values};
+use util\{CompositeProperties, Properties, RegisteredPropertySource};
 use websocket\Environment;
 
 class EnvironmentTest extends \unittest\TestCase {
 
-  #[@test]
+  #[Test]
   public function can_create() {
     new Environment('dev', []);
   }
 
-  #[@test]
+  #[Test]
   public function profile() {
     $this->assertEquals('dev', (new Environment('dev', []))->profile());
   }
 
-  #[@test, @expect(ElementNotFoundException::class)]
+  #[Test, Expect(ElementNotFoundException::class)]
   public function non_existant_properties() {
     (new Environment('dev', []))->properties('inject');
   }
 
-  #[@test]
+  #[Test]
   public function properties() {
     $prop= new Properties('inject.ini');
     $environment= new Environment('dev', [new RegisteredPropertySource('inject', $prop)]);
     $this->assertEquals($prop, $environment->properties('inject'));
   }
 
-  #[@test]
+  #[Test]
   public function composite_properties() {
     $prop= [new Properties('inject.ini'), new Properties('global/inject.ini')];
     $environment= new Environment('dev', [new RegisteredPropertySource('inject', $prop[0]), new RegisteredPropertySource('inject', $prop[1])]);
@@ -44,7 +40,7 @@ class EnvironmentTest extends \unittest\TestCase {
     $this->assertEquals(2, $composite->length());
   }
 
-  #[@test]
+  #[Test]
   public function properties_from_directory() {
     $dir= new Folder(System::tempDir(), $this->name);
     $dir->create();
@@ -59,7 +55,7 @@ class EnvironmentTest extends \unittest\TestCase {
     }
   }
 
-  #[@test, @values([[[]], [['test', 'value']]])]
+  #[Test, Values([[[]], [['test', 'value']]])]
   public function arguments($arguments) {
     $this->assertEquals($arguments, (new Environment('dev', [], $arguments))->arguments());
   }

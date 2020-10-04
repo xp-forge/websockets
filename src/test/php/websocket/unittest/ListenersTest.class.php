@@ -1,10 +1,8 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
-use unittest\TestCase;
-use websocket\Environment;
-use websocket\Listener;
-use websocket\Listeners;
+use unittest\{Expect, Test, TestCase, Values};
+use websocket\{Environment, Listener, Listeners};
 
 class ListenersTest extends TestCase {
   const ID = 42;
@@ -21,13 +19,13 @@ class ListenersTest extends TestCase {
     ]);
   }
 
-  #[@test]
+  #[Test]
   public function cast_function() {
     $f= function($conn, $message) { };
     $this->assertEquals($f, Listeners::cast($f));
   }
 
-  #[@test]
+  #[Test]
   public function cast_listener() {
     $l= newinstance(Listener::class, [], [
       'message' =>  function($conn, $message) { }
@@ -35,41 +33,34 @@ class ListenersTest extends TestCase {
     $this->assertEquals([$l, 'message'], Listeners::cast($l));
   }
 
-  #[@test, @expect(IllegalArgumentException::class)]
+  #[Test, Expect(IllegalArgumentException::class)]
   public function cast_non_listener() {
     Listeners::cast($this);
   }
 
-  #[@test, @expect(IllegalArgumentException::class)]
+  #[Test, Expect(IllegalArgumentException::class)]
   public function cast_null() {
     Listeners::cast(null);
   }
 
-  #[@test]
+  #[Test]
   public function can_create() {
     $this->fixture();
   }
 
-  #[@test]
+  #[Test]
   public function compare_to_self() {
     $fixture= $this->fixture();
     $this->assertEquals(0, $fixture->compareTo($fixture));
   }
 
-  #[@test]
+  #[Test]
   public function compare_to_another_instance() {
     $fixture= $this->fixture();
     $this->assertEquals(1, $fixture->compareTo($this->fixture()));
   }
 
-  #[@test, @values([
-  #  ['/listen', 'listen'],
-  #  ['/test', 'test'],
-  #  ['/test/', 'test'],
-  #  ['/test/chat', 'test'],
-  #  ['/testing', 'catch-all'],
-  #  ['/prod', 'catch-all'],
-  #])]
+  #[Test, Values([['/listen', 'listen'], ['/test', 'test'], ['/test/', 'test'], ['/test/chat', 'test'], ['/testing', 'catch-all'], ['/prod', 'catch-all'],])]
   public function listener($path, $expected) {
     $listeners= $this->fixture(function($events) {
       return [
@@ -84,7 +75,7 @@ class ListenersTest extends TestCase {
     $this->assertEquals($expected, $listener(null, 'Test'));
   }
 
-  #[@test]
+  #[Test]
   public function no_catch_all() {
     $listeners= $this->fixture(function($events) {
       return [

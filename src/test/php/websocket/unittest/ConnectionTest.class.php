@@ -1,9 +1,8 @@
 <?php namespace websocket\unittest;
 
-use unittest\TestCase;
+use unittest\{Test, TestCase, Values};
 use util\Bytes;
-use websocket\protocol\Connection;
-use websocket\protocol\Opcodes;
+use websocket\protocol\{Connection, Opcodes};
 
 class ConnectionTest extends TestCase {
   const ID = 0;
@@ -23,28 +22,28 @@ class ConnectionTest extends TestCase {
     return $r;
   }
 
-  #[@test]
+  #[Test]
   public function can_create() {
     new Connection(new Channel(), self::ID, function($conn, $message) { }, []);
   }
 
-  #[@test]
+  #[Test]
   public function id() {
     $this->assertEquals(self::ID, (new Connection(new Channel(), self::ID, function($conn, $message) { }, []))->id());
   }
 
-  #[@test]
+  #[Test]
   public function listener() {
     $listener= function($conn, $message) { };
     $this->assertEquals($listener, (new Connection(new Channel(), self::ID, $listener, []))->listener());
   }
 
-  #[@test, @values([[[]], [['User-Agent' => 'Test', 'Accept' => '*/*']]])]
+  #[Test, Values([[[]], [['User-Agent' => 'Test', 'Accept' => '*/*']]])]
   public function headers($value) {
     $this->assertEquals($value, (new Connection(new Channel(), self::ID, function($conn, $message) { }, $value))->headers());
   }
 
-  #[@test]
+  #[Test]
   public function text() {
     $received= $this->receive(new Channel("\x81\x04Test"));
     $this->assertEquals(
@@ -53,7 +52,7 @@ class ConnectionTest extends TestCase {
     );
   }
 
-  #[@test]
+  #[Test]
   public function masked_text() {
     $received= $this->receive(new Channel("\x81\x86\x01\x02\x03\x04Ugppdf"));
     $this->assertEquals(
@@ -62,7 +61,7 @@ class ConnectionTest extends TestCase {
     );
   }
 
-  #[@test]
+  #[Test]
   public function fragmented_text() {
     $received= $this->receive(new Channel("\x01\x05Hello\x80\x06 World"));
     $this->assertEquals(
@@ -71,7 +70,7 @@ class ConnectionTest extends TestCase {
     );
   }
 
-  #[@test]
+  #[Test]
   public function fragmented_text_with_ping_inbetween() {
     $received= $this->receive(new Channel("\x01\x05Hello\x89\x01!\x80\x06 World"));
     $this->assertEquals(
@@ -80,7 +79,7 @@ class ConnectionTest extends TestCase {
     );
   }
 
-  #[@test, @values(['', "\x81"])]
+  #[Test, Values(['', "\x81"])]
   public function closes_connection_on_invalid_packet($bytes) {
     $channel= (new Channel($bytes))->connect();
     $this->receive($channel);
@@ -89,7 +88,7 @@ class ConnectionTest extends TestCase {
     $this->assertFalse($channel->isConnected(), 'Channel closed');
   }
 
-  #[@test]
+  #[Test]
   public function closes_connection_on_invalid_opcode() {
     $channel= (new Channel("\x8f\x00"))->connect();
     $this->receive($channel);
@@ -99,7 +98,7 @@ class ConnectionTest extends TestCase {
     $this->assertFalse($channel->isConnected(), 'Channel closed');
   }
 
-  #[@test]
+  #[Test]
   public function closes_connection_when_exceeding_max_length() {
     $channel= (new Channel("\x81\x7f".pack('J', Connection::MAXLENGTH + 1)))->connect();
     $this->receive($channel);
@@ -109,7 +108,7 @@ class ConnectionTest extends TestCase {
     $this->assertFalse($channel->isConnected(), 'Channel closed');
   }
 
-  #[@test]
+  #[Test]
   public function send_string() {
     $channel= (new Channel())->connect();
     (new Connection($channel, self::ID, function($conn, $message) { }, []))->send('Test');
@@ -117,7 +116,7 @@ class ConnectionTest extends TestCase {
     $this->assertEquals("\x81\x04Test", $channel->out);
   }
 
-  #[@test]
+  #[Test]
   public function send_bytes() {
     $channel= (new Channel())->connect();
     (new Connection($channel, self::ID, function($conn, $message) { }, []))->send(new Bytes('Test'));
@@ -125,14 +124,7 @@ class ConnectionTest extends TestCase {
     $this->assertEquals("\x82\x04Test", $channel->out);
   }
 
-  #[@test, @values([
-  #  [0, "\x81\x00"],
-  #  [1, "\x81\x01"],
-  #  [125, "\x81\x7d"],
-  #  [126, "\x81\x7e\x00\x7e"],
-  #  [65535, "\x81\x7e\xff\xff"],
-  #  [65536, "\x81\x7f\x00\x00\x00\x00\x00\x01\x00\x00"],
-  #])]
+  #[Test, Values([[0, "\x81\x00"], [1, "\x81\x01"], [125, "\x81\x7d"], [126, "\x81\x7e\x00\x7e"], [65535, "\x81\x7e\xff\xff"], [65536, "\x81\x7f\x00\x00\x00\x00\x00\x01\x00\x00"],])]
   public function send($length, $header) {
     $string= str_repeat('*', $length);
     $channel= (new Channel())->connect();
@@ -142,14 +134,7 @@ class ConnectionTest extends TestCase {
     $this->assertEquals(strlen($header) + $length, strlen($channel->out));
   }
 
-  #[@test, @values([
-  #  [0, "\x81\x00"],
-  #  [1, "\x81\x01"],
-  #  [125, "\x81\x7d"],
-  #  [126, "\x81\x7e\x00\x7e"],
-  #  [65535, "\x81\x7e\xff\xff"],
-  #  [65536, "\x81\x7f\x00\x00\x00\x00\x00\x01\x00\x00"],
-  #])]
+  #[Test, Values([[0, "\x81\x00"], [1, "\x81\x01"], [125, "\x81\x7d"], [126, "\x81\x7e\x00\x7e"], [65535, "\x81\x7e\xff\xff"], [65536, "\x81\x7f\x00\x00\x00\x00\x00\x01\x00\x00"],])]
   public function read($length, $header) {
     $string= str_repeat('*', $length);
     $channel= (new Channel($header.$string))->connect();

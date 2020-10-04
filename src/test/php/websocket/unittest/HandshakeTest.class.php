@@ -1,11 +1,8 @@
 <?php namespace websocket\unittest;
 
-use unittest\TestCase;
-use websocket\Dispatch;
-use websocket\Environment;
-use websocket\Listeners;
-use websocket\Logging;
+use unittest\{Test, TestCase};
 use websocket\protocol\Handshake;
+use websocket\{Dispatch, Environment, Listeners, Logging};
 
 class HandshakeTest extends TestCase {
   private $log;
@@ -44,12 +41,12 @@ class HandshakeTest extends TestCase {
     }
   }
 
-  #[@test]
+  #[Test]
   public function can_create() {
     $this->fixture();
   }
 
-  #[@test]
+  #[Test]
   public function successful_handshake() {
     $c= new Channel(
       "GET /ws HTTP/1.1\r\n".
@@ -74,7 +71,7 @@ class HandshakeTest extends TestCase {
     $this->assertTrue($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function cannot_dispatch() {
     $c= new Channel(
       "GET /chat HTTP/1.1\r\n".
@@ -99,7 +96,7 @@ class HandshakeTest extends TestCase {
     $this->assertFalse($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function unsupported_ws_version() {
     $c= new Channel(
       "GET /ws HTTP/1.1\r\n".
@@ -125,7 +122,7 @@ class HandshakeTest extends TestCase {
     $this->assertFalse($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function normal_http_request() {
     $c= new Channel(
       "GET /ws HTTP/1.1\r\n".
@@ -150,7 +147,7 @@ class HandshakeTest extends TestCase {
     $this->assertFalse($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function end_is_noop() {
     $c= new Channel();
     $this->fixture()->end($c, 0);

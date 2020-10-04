@@ -1,8 +1,6 @@
 <?php namespace websocket\unittest;
 
-use peer\ConnectException;
-use peer\Socket;
-use peer\SocketException;
+use peer\{ConnectException, Socket, SocketException};
 
 class Channel extends Socket {
   public $in= '', $out;

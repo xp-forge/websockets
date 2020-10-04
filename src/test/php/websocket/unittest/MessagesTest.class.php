@@ -1,16 +1,11 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalStateException;
-use unittest\TestCase;
-use util\Bytes;
-use util\URI;
-use websocket\Dispatch;
-use websocket\Environment;
-use websocket\Listeners;
-use websocket\Logging;
+use unittest\{Test, TestCase, Values};
+use util\{Bytes, URI};
 use websocket\logging\Sink;
-use websocket\protocol\Connection;
-use websocket\protocol\Messages;
+use websocket\protocol\{Connection, Messages};
+use websocket\{Dispatch, Environment, Listeners, Logging};
 
 class MessagesTest extends TestCase {
   const ID = 42;
@@ -43,7 +38,7 @@ class MessagesTest extends TestCase {
     return new Messages($listeners, $this->log);
   }
 
-  #[@test, @values([["\x81", 'Test'], ["\x82", new Bytes('Test')]])]
+  #[Test, Values(eval: '[["\x81", "Test"], ["\x82", new Bytes("Test")]]')]
   public function handle_message($type, $expected) {
     $invoked= [];
     $c= new Channel($type."\x04Test");
@@ -55,7 +50,7 @@ class MessagesTest extends TestCase {
     $this->assertEquals([[self::ID => $expected]], $invoked);
   }
 
-  #[@test]
+  #[Test]
   public function text_message_with_malformed_utf8() {
     $c= new Channel("\x81\x04\xfcber");
     $this->fixture($c)->next($c, self::ID);
@@ -64,7 +59,7 @@ class MessagesTest extends TestCase {
     $this->assertFalse($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function incoming_ping_answered_with_pong() {
     $c= new Channel("\x89\x04Test");
     $this->fixture($c)->next($c, self::ID);
@@ -72,7 +67,7 @@ class MessagesTest extends TestCase {
     $this->assertEquals(new Bytes("\x8a\x04Test"), new Bytes(substr($c->out, -6)));
   }
 
-  #[@test]
+  #[Test]
   public function incoming_pong_ignored() {
     $c= new Channel("\x8a\x04Test");
     $this->fixture($c)->next($c, self::ID);
@@ -80,7 +75,7 @@ class MessagesTest extends TestCase {
     $this->assertEquals('', $c->out);
   }
 
-  #[@test]
+  #[Test]
   public function close_without_payload() {
     $c= new Channel("\x88\x00");
     $this->fixture($c)->next($c, self::ID);
@@ -89,7 +84,7 @@ class MessagesTest extends TestCase {
     $this->assertFalse($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function close_with_code_and_message_echoed() {
     $c= new Channel("\x88\x06\x0b\xb8Test");
     $this->fixture($c)->next($c, self::ID);
@@ -98,7 +93,7 @@ class MessagesTest extends TestCase {
     $this->assertFalse($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function close_with_illegal_client_code() {
     $c= new Channel("\x88\x06\x03\xecTest");
     $this->fixture($c)->next($c, self::ID);
@@ -107,7 +102,7 @@ class MessagesTest extends TestCase {
     $this->assertFalse($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function close_with_malformed_utf8() {
     $c= new Channel("\x88\x06\x03\xec\xfcber");
     $this->fixture($c)->next($c, self::ID);
@@ -116,7 +111,7 @@ class MessagesTest extends TestCase {
     $this->assertFalse($c->isConnected());
   }
 
-  #[@test]
+  #[Test]
   public function exceptions_are_logged() {
     $logged= [];
     $c= new Channel("\x81\x04Test");
@@ -130,7 +125,7 @@ class MessagesTest extends TestCase {
     $this->assertEquals([[self::ID, 'TEXT', 'lang.IllegalStateException']], $logged);
   }
 
-  #[@test]
+  #[Test]
   public function native_exceptions_are_wrapped() {
     $logged= [];
     $c= new Channel("\x81\x04Test");
@@ -144,7 +139,7 @@ class MessagesTest extends TestCase {
     $this->assertEquals([[self::ID, 'TEXT', 'lang.XPException']], $logged);
   }
 
-  #[@test]
+  #[Test]
   public function end() {
     $c= new Channel();
     $this->fixture($c)->end($c, self::ID);

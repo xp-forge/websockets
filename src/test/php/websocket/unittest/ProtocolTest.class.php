@@ -1,12 +1,8 @@
 <?php namespace websocket\unittest;
 
-use unittest\TestCase;
-use websocket\Dispatch;
-use websocket\Environment;
-use websocket\Listeners;
-use websocket\Logging;
-use xp\ws\Events;
-use xp\ws\Protocol;
+use unittest\{Test, TestCase};
+use websocket\{Dispatch, Environment, Listeners, Logging};
+use xp\ws\{Events, Protocol};
 
 class ProtocolTest extends TestCase {
   const ID = 42;
@@ -36,7 +32,7 @@ class ProtocolTest extends TestCase {
     return new Protocol($listeners, $this->log);
   }
 
-  #[@test]
+  #[Test]
   public function handshake_only() {
     $invoked= [];
     $p= $this->fixture(function($conn, $message) use(&$invoked) {
@@ -51,7 +47,7 @@ class ProtocolTest extends TestCase {
     $this->assertEquals([], $invoked);
   }
 
-  #[@test]
+  #[Test]
   public function complete_flow() {
     $invoked= [];
     $p= $this->fixture(function($conn, $message) use(&$invoked) {

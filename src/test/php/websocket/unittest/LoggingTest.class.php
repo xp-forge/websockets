@@ -1,41 +1,41 @@
 <?php namespace websocket\unittest;
 
-use lang\IllegalArgumentException;
-use lang\Throwable;
-use unittest\TestCase;
+use lang\{IllegalArgumentException, Throwable};
+use unittest\{Test, TestCase, Values};
 use websocket\Logging;
-use websocket\logging\ToAllOf;
-use websocket\logging\ToConsole;
-use websocket\logging\ToFunction;
+use websocket\logging\{ToAllOf, ToConsole, ToFunction};
 
 class LoggingTest extends TestCase {
   const ID = 42;
 
-  #[@test]
+  /** @return iterable */
+  private function arguments() {
+    yield ['#42 TEXT OK', 'OK'];
+    yield ['#42 TEXT lang.IllegalArgumentException', new IllegalArgumentException('Test')];
+  }
+
+  #[Test]
   public function can_create() {
     new Logging(null);
   }
 
-  #[@test]
+  #[Test]
   public function can_create_with_sink() {
     new Logging(new ToFunction(function($client, $opcode, $result) { }));
   }
 
-  #[@test]
+  #[Test]
   public function target() {
     $sink= new ToFunction(function($client, $opcode, $result) { });
     $this->assertEquals($sink->target(), (new Logging($sink))->target());
   }
 
-  #[@test]
+  #[Test]
   public function no_logging_target() {
     $this->assertEquals('(no logging)', (new Logging(null))->target());
   }
 
-  #[@test, @values([
-  #  ['#42 TEXT OK', 'OK'],
-  #  ['#42 TEXT lang.IllegalArgumentException', new IllegalArgumentException('Test')],
-  #])]
+  #[Test, Values('arguments')]
   public function log($expected, $result) {
     $logged= [];
     $log= new Logging(new ToFunction(function($client, $opcode, $result) use(&$logged) {
@@ -46,21 +46,21 @@ class LoggingTest extends TestCase {
     $this->assertEquals([$expected], $logged);
   }
 
-  #[@test]
+  #[Test]
   public function pipe() {
     $a= new ToFunction(function($client, $opcode, $result) { /* a */ });
     $b= new ToFunction(function($client, $opcode, $result) { /* b */ });
     $this->assertEquals($b, (new Logging($a))->pipe($b)->sink());
   }
 
-  #[@test]
+  #[Test]
   public function tee() {
     $a= new ToFunction(function($client, $opcode, $result) { /* a */ });
     $b= new ToFunction(function($client, $opcode, $result) { /* b */ });
     $this->assertEquals(new ToAllOf($a, $b), (new Logging($a))->tee($b)->sink());
   }
 
-  #[@test]
+  #[Test]
   public function tee_multiple() {
     $a= new ToFunction(function($client, $opcode, $result) { /* a */ });
     $b= new ToFunction(function($client, $opcode, $result) { /* b */ });
@@ -68,19 +68,19 @@ class LoggingTest extends TestCase {
     $this->assertEquals(new ToAllOf($a, $b, $c), (new Logging($a))->tee($b)->tee($c)->sink());
   }
 
-  #[@test]
+  #[Test]
   public function pipe_on_no_logging() {
     $sink= new ToFunction(function($client, $opcode, $result) { });
     $this->assertEquals($sink, (new Logging(null))->pipe($sink)->sink());
   }
 
-  #[@test]
+  #[Test]
   public function tee_on_no_logging() {
     $sink= new ToFunction(function($client, $opcode, $result) { });
     $this->assertEquals($sink, (new Logging(null))->tee($sink)->sink());
   }
 
-  #[@test]
+  #[Test]
   public function pipe_accepts_strings() {
     $this->assertEquals(new ToConsole(), (new Logging(null))->pipe('-')->sink());
   }
