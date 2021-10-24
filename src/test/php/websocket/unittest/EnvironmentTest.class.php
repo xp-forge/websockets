@@ -1,6 +1,6 @@
 <?php namespace websocket\unittest;
 
-use io\{File, FileUtil, Folder};
+use io\{File, Files, Folder};
 use lang\{ElementNotFoundException, Environment as System};
 use unittest\Assert;
 use unittest\{Expect, Test, Values};
@@ -48,7 +48,7 @@ class EnvironmentTest {
 
     try {
       $prop= new File($dir, 'inject.ini');
-      FileUtil::setContents($prop, "[test]\nresult=success\n");
+      Files::write($prop, "[test]\nresult=success\n");
       $environment= new Environment('dev', [$dir->getURI()]);
       Assert::equals('success', $environment->properties('inject')->readString('test', 'result'));
     } finally {
