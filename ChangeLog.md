@@ -3,6 +3,9 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+* Implemented xp-framework/rfc#341, dropping compatibility with XP 9
+  (@thekid)
+
 ## 1.0.1 / 2020-04-10
 
 * Made compatible with `xp-forge/uri` version 2.0.0 - @thekid
