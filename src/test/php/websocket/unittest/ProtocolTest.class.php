@@ -1,16 +1,18 @@
 <?php namespace websocket\unittest;
 
+use unittest\Assert;
 use unittest\{Test, TestCase};
 use websocket\{Dispatch, Environment, Listeners, Logging};
 use xp\ws\{Events, Protocol};
 
-class ProtocolTest extends TestCase {
+class ProtocolTest {
   const ID = 42;
   const HANDSHAKE = "GET /ws HTTP/1.1\r\nHost: localhost\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: VW5pdHRlc\r\n\r\n";
 
   private $log, $events;
 
   /** @return void */
+  #[Before]
   public function setUp() {
     $this->log= new Logging(null);
     $this->events= new Events();
@@ -44,7 +46,7 @@ class ProtocolTest extends TestCase {
     $p->data($this->events, $c, self::ID);
     $p->close($this->events, $c, self::ID);
 
-    $this->assertEquals([], $invoked);
+    Assert::equals([], $invoked);
   }
 
   #[Test]
@@ -60,6 +62,6 @@ class ProtocolTest extends TestCase {
     $p->data($this->events, $c, self::ID);
     $p->close($this->events, $c, self::ID);
 
-    $this->assertEquals([[self::ID => 'Test']], $invoked);
+    Assert::equals([[self::ID => 'Test']], $invoked);
   }
 }

@@ -1,18 +1,20 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalStateException;
+use unittest\Assert;
 use unittest\{Test, TestCase, Values};
 use util\{Bytes, URI};
 use websocket\logging\Sink;
 use websocket\protocol\{Connection, Messages};
 use websocket\{Dispatch, Environment, Listeners, Logging};
 
-class MessagesTest extends TestCase {
+class MessagesTest {
   const ID = 42;
 
   private $log;
 
   /** @return void */
+  #[Before]
   public function setUp() {
     $this->log= new Logging(null);
   }
@@ -47,7 +49,7 @@ class MessagesTest extends TestCase {
     });
     $p->next($c, self::ID);
 
-    $this->assertEquals([[self::ID => $expected]], $invoked);
+    Assert::equals([[self::ID => $expected]], $invoked);
   }
 
   #[Test]
@@ -55,8 +57,8 @@ class MessagesTest extends TestCase {
     $c= new Channel("\x81\x04\xfcber");
     $this->fixture($c)->next($c, self::ID);
 
-    $this->assertEquals(new Bytes("\x88\x02\x03\xef"), new Bytes(substr($c->out, -4)));
-    $this->assertFalse($c->isConnected());
+    Assert::equals(new Bytes("\x88\x02\x03\xef"), new Bytes(substr($c->out, -4)));
+    Assert::false($c->isConnected());
   }
 
   #[Test]
@@ -64,7 +66,7 @@ class MessagesTest extends TestCase {
     $c= new Channel("\x89\x04Test");
     $this->fixture($c)->next($c, self::ID);
 
-    $this->assertEquals(new Bytes("\x8a\x04Test"), new Bytes(substr($c->out, -6)));
+    Assert::equals(new Bytes("\x8a\x04Test"), new Bytes(substr($c->out, -6)));
   }
 
   #[Test]
@@ -72,7 +74,7 @@ class MessagesTest extends TestCase {
     $c= new Channel("\x8a\x04Test");
     $this->fixture($c)->next($c, self::ID);
 
-    $this->assertEquals('', $c->out);
+    Assert::equals('', $c->out);
   }
 
   #[Test]
@@ -80,8 +82,8 @@ class MessagesTest extends TestCase {
     $c= new Channel("\x88\x00");
     $this->fixture($c)->next($c, self::ID);
 
-    $this->assertEquals(new Bytes("\x88\x02\x03\xe8"), new Bytes(substr($c->out, -4)));
-    $this->assertFalse($c->isConnected());
+    Assert::equals(new Bytes("\x88\x02\x03\xe8"), new Bytes(substr($c->out, -4)));
+    Assert::false($c->isConnected());
   }
 
   #[Test]
@@ -89,8 +91,8 @@ class MessagesTest extends TestCase {
     $c= new Channel("\x88\x06\x0b\xb8Test");
     $this->fixture($c)->next($c, self::ID);
 
-    $this->assertEquals(new Bytes("\x88\x06\x0b\xb8Test"), new Bytes(substr($c->out, -8)));
-    $this->assertFalse($c->isConnected());
+    Assert::equals(new Bytes("\x88\x06\x0b\xb8Test"), new Bytes(substr($c->out, -8)));
+    Assert::false($c->isConnected());
   }
 
   #[Test]
@@ -98,8 +100,8 @@ class MessagesTest extends TestCase {
     $c= new Channel("\x88\x06\x03\xecTest");
     $this->fixture($c)->next($c, self::ID);
 
-    $this->assertEquals(new Bytes("\x88\x02\x03\xea"), new Bytes(substr($c->out, -4)));
-    $this->assertFalse($c->isConnected());
+    Assert::equals(new Bytes("\x88\x02\x03\xea"), new Bytes(substr($c->out, -4)));
+    Assert::false($c->isConnected());
   }
 
   #[Test]
@@ -107,8 +109,8 @@ class MessagesTest extends TestCase {
     $c= new Channel("\x88\x06\x03\xec\xfcber");
     $this->fixture($c)->next($c, self::ID);
 
-    $this->assertEquals(new Bytes("\x88\x02\x03\xef"), new Bytes(substr($c->out, -4)));
-    $this->assertFalse($c->isConnected());
+    Assert::equals(new Bytes("\x88\x02\x03\xef"), new Bytes(substr($c->out, -4)));
+    Assert::false($c->isConnected());
   }
 
   #[Test]
@@ -122,7 +124,7 @@ class MessagesTest extends TestCase {
     ]));
     $this->fixture($c, function($conn, $message) { throw new IllegalStateException('Test'); })->next($c, self::ID);
 
-    $this->assertEquals([[self::ID, 'TEXT', 'lang.IllegalStateException']], $logged);
+    Assert::equals([[self::ID, 'TEXT', 'lang.IllegalStateException']], $logged);
   }
 
   #[Test]
@@ -136,7 +138,7 @@ class MessagesTest extends TestCase {
     ]));
     $this->fixture($c, function($conn, $message) { throw new \Exception('Test'); })->next($c, self::ID);
 
-    $this->assertEquals([[self::ID, 'TEXT', 'lang.XPException']], $logged);
+    Assert::equals([[self::ID, 'TEXT', 'lang.XPException']], $logged);
   }
 
   #[Test]

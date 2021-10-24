@@ -1,11 +1,12 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
+use unittest\Assert;
 use unittest\{Test, TestCase, Values};
 use util\URI;
 use websocket\logging\{ToAllOf, ToConsole, ToFunction};
 
-class ToAllOfTest extends TestCase {
+class ToAllOfTest {
   const ID = 42;
 
   /** @return iterable */
@@ -33,26 +34,26 @@ class ToAllOfTest extends TestCase {
   public function sinks() {
     $a= new ToConsole();
     $b= new ToFunction(function($client, $opcode, $result) {  });
-    $this->assertEquals([$a, $b], (new ToAllOf($a, $b))->sinks());
+    Assert::equals([$a, $b], (new ToAllOf($a, $b))->sinks());
   }
 
   #[Test]
   public function sinks_are_merged_when_passed_ToAllOf_instance() {
     $a= new ToConsole();
     $b= new ToFunction(function($client, $opcode, $result) {  });
-    $this->assertEquals([$a, $b], (new ToAllOf(new ToAllOf($a, $b)))->sinks());
+    Assert::equals([$a, $b], (new ToAllOf(new ToAllOf($a, $b)))->sinks());
   }
 
   #[Test]
   public function sinks_are_empty_when_created_without_arg() {
-    $this->assertEquals([], (new ToAllOf())->sinks());
+    Assert::equals([], (new ToAllOf())->sinks());
   }
 
   #[Test]
   public function targets() {
     $a= new ToConsole();
     $b= new ToFunction(function($client, $opcode, $result) { });
-    $this->assertEquals('(websocket.logging.ToConsole & websocket.logging.ToFunction)', (new ToAllOf($a, $b))->target());
+    Assert::equals('(websocket.logging.ToConsole & websocket.logging.ToFunction)', (new ToAllOf($a, $b))->target());
   }
 
   #[Test, Values('arguments')]
@@ -68,6 +69,6 @@ class ToAllOfTest extends TestCase {
     );
     $sink->log(self::ID, 'TEXT', $error);
 
-    $this->assertEquals($expected, $logged);
+    Assert::equals($expected, $logged);
   }
 }

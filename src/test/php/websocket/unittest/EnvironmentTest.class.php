@@ -2,11 +2,12 @@
 
 use io\{File, FileUtil, Folder};
 use lang\{ElementNotFoundException, Environment as System};
+use unittest\Assert;
 use unittest\{Expect, Test, Values};
 use util\{CompositeProperties, Properties, RegisteredPropertySource};
 use websocket\Environment;
 
-class EnvironmentTest extends \unittest\TestCase {
+class EnvironmentTest {
 
   #[Test]
   public function can_create() {
@@ -15,7 +16,7 @@ class EnvironmentTest extends \unittest\TestCase {
 
   #[Test]
   public function profile() {
-    $this->assertEquals('dev', (new Environment('dev', []))->profile());
+    Assert::equals('dev', (new Environment('dev', []))->profile());
   }
 
   #[Test, Expect(ElementNotFoundException::class)]
@@ -27,7 +28,7 @@ class EnvironmentTest extends \unittest\TestCase {
   public function properties() {
     $prop= new Properties('inject.ini');
     $environment= new Environment('dev', [new RegisteredPropertySource('inject', $prop)]);
-    $this->assertEquals($prop, $environment->properties('inject'));
+    Assert::equals($prop, $environment->properties('inject'));
   }
 
   #[Test]
@@ -36,20 +37,20 @@ class EnvironmentTest extends \unittest\TestCase {
     $environment= new Environment('dev', [new RegisteredPropertySource('inject', $prop[0]), new RegisteredPropertySource('inject', $prop[1])]);
 
     $composite= $environment->properties('inject');
-    $this->assertInstanceOf(CompositeProperties::class, $composite);
-    $this->assertEquals(2, $composite->length());
+    Assert::instance(CompositeProperties::class, $composite);
+    Assert::equals(2, $composite->length());
   }
 
   #[Test]
   public function properties_from_directory() {
-    $dir= new Folder(System::tempDir(), $this->name);
+    $dir= new Folder(System::tempDir(), 'environment');
     $dir->create();
 
     try {
       $prop= new File($dir, 'inject.ini');
       FileUtil::setContents($prop, "[test]\nresult=success\n");
       $environment= new Environment('dev', [$dir->getURI()]);
-      $this->assertEquals('success', $environment->properties('inject')->readString('test', 'result'));
+      Assert::equals('success', $environment->properties('inject')->readString('test', 'result'));
     } finally {
       $dir->unlink();
     }
@@ -57,6 +58,6 @@ class EnvironmentTest extends \unittest\TestCase {
 
   #[Test, Values([[[]], [['test', 'value']]])]
   public function arguments($arguments) {
-    $this->assertEquals($arguments, (new Environment('dev', [], $arguments))->arguments());
+    Assert::equals($arguments, (new Environment('dev', [], $arguments))->arguments());
   }
 }

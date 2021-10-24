@@ -2,11 +2,12 @@
 
 use io\streams\{MemoryOutputStream, StringWriter};
 use lang\IllegalArgumentException;
-use unittest\{Test, TestCase, _test};
+use unittest\Assert;
+use unittest\{Test, TestCase};
 use util\URI;
 use websocket\logging\ToConsole;
 
-class ToConsoleTest extends TestCase {
+class ToConsoleTest {
 
   #[Test]
   public function can_create() {
@@ -18,14 +19,14 @@ class ToConsoleTest extends TestCase {
     $out= new MemoryOutputStream();
     (new ToConsole(new StringWriter($out)))->log('TEXT', new URI('/ws'), '+OK');
 
-    $this->assertNotEquals('', $out->getBytes());
+    Assert::notEquals('', $out->bytes());
   }
 
-  #[_test]
+  #[Test]
   public function log_with_error() {
     $out= new MemoryOutputStream();
     (new ToConsole(new StringWriter($out)))->log('TEXT', new URI('/ws'), '-ERR', new IllegalArgumentException('Test'));
 
-    $this->assertNotEquals('', $out->getBytes());
+    Assert::notEquals('', $out->bytes());
   }
 }

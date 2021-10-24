@@ -1,12 +1,13 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
+use unittest\Assert;
 use unittest\{Test, TestCase};
 use util\URI;
 use util\log\{BufferedAppender, LogCategory};
 use websocket\logging\ToCategory;
 
-class ToCategoryTest extends TestCase {
+class ToCategoryTest {
   const ID = 42;
 
   #[Test]
@@ -19,7 +20,7 @@ class ToCategoryTest extends TestCase {
     $buf= new BufferedAppender();
     (new ToCategory((new LogCategory())->withAppender($buf)))->log(self::ID, 'TEXT', '+OK');
 
-    $this->assertNotEquals('', $buf->getBuffer());
+    Assert::notEquals('', $buf->getBuffer());
   }
 
   #[Test]
@@ -27,6 +28,6 @@ class ToCategoryTest extends TestCase {
     $buf= new BufferedAppender();
     (new ToCategory((new LogCategory())->withAppender($buf)))->log(self::ID, 'TEXT', new IllegalArgumentException('Test'));
 
-    $this->assertNotEquals('', $buf->getBuffer());
+    Assert::notEquals('', $buf->getBuffer());
   }
 }

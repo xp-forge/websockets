@@ -1,11 +1,12 @@
 <?php namespace websocket\unittest;
 
 use lang\{IllegalArgumentException, Throwable};
+use unittest\Assert;
 use unittest\{Test, TestCase, Values};
 use websocket\Logging;
 use websocket\logging\{ToAllOf, ToConsole, ToFunction};
 
-class LoggingTest extends TestCase {
+class LoggingTest {
   const ID = 42;
 
   /** @return iterable */
@@ -27,12 +28,12 @@ class LoggingTest extends TestCase {
   #[Test]
   public function target() {
     $sink= new ToFunction(function($client, $opcode, $result) { });
-    $this->assertEquals($sink->target(), (new Logging($sink))->target());
+    Assert::equals($sink->target(), (new Logging($sink))->target());
   }
 
   #[Test]
   public function no_logging_target() {
-    $this->assertEquals('(no logging)', (new Logging(null))->target());
+    Assert::equals('(no logging)', (new Logging(null))->target());
   }
 
   #[Test, Values('arguments')]
@@ -43,21 +44,21 @@ class LoggingTest extends TestCase {
     }));
     $log->log(self::ID, 'TEXT', $result);
 
-    $this->assertEquals([$expected], $logged);
+    Assert::equals([$expected], $logged);
   }
 
   #[Test]
   public function pipe() {
     $a= new ToFunction(function($client, $opcode, $result) { /* a */ });
     $b= new ToFunction(function($client, $opcode, $result) { /* b */ });
-    $this->assertEquals($b, (new Logging($a))->pipe($b)->sink());
+    Assert::equals($b, (new Logging($a))->pipe($b)->sink());
   }
 
   #[Test]
   public function tee() {
     $a= new ToFunction(function($client, $opcode, $result) { /* a */ });
     $b= new ToFunction(function($client, $opcode, $result) { /* b */ });
-    $this->assertEquals(new ToAllOf($a, $b), (new Logging($a))->tee($b)->sink());
+    Assert::equals(new ToAllOf($a, $b), (new Logging($a))->tee($b)->sink());
   }
 
   #[Test]
@@ -65,23 +66,23 @@ class LoggingTest extends TestCase {
     $a= new ToFunction(function($client, $opcode, $result) { /* a */ });
     $b= new ToFunction(function($client, $opcode, $result) { /* b */ });
     $c= new ToFunction(function($client, $opcode, $result) { /* c */ });
-    $this->assertEquals(new ToAllOf($a, $b, $c), (new Logging($a))->tee($b)->tee($c)->sink());
+    Assert::equals(new ToAllOf($a, $b, $c), (new Logging($a))->tee($b)->tee($c)->sink());
   }
 
   #[Test]
   public function pipe_on_no_logging() {
     $sink= new ToFunction(function($client, $opcode, $result) { });
-    $this->assertEquals($sink, (new Logging(null))->pipe($sink)->sink());
+    Assert::equals($sink, (new Logging(null))->pipe($sink)->sink());
   }
 
   #[Test]
   public function tee_on_no_logging() {
     $sink= new ToFunction(function($client, $opcode, $result) { });
-    $this->assertEquals($sink, (new Logging(null))->tee($sink)->sink());
+    Assert::equals($sink, (new Logging(null))->tee($sink)->sink());
   }
 
   #[Test]
   public function pipe_accepts_strings() {
-    $this->assertEquals(new ToConsole(), (new Logging(null))->pipe('-')->sink());
+    Assert::equals(new ToConsole(), (new Logging(null))->pipe('-')->sink());
   }
 }

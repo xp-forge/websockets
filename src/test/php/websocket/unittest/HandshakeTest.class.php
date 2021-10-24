@@ -1,13 +1,15 @@
 <?php namespace websocket\unittest;
 
+use unittest\Assert;
 use unittest\{Test, TestCase};
 use websocket\protocol\Handshake;
 use websocket\{Dispatch, Environment, Listeners, Logging};
 
-class HandshakeTest extends TestCase {
+class HandshakeTest {
   private $log;
 
   /** @return void */
+  #[Before]
   public function setUp() {
     $this->log= new Logging(null);
   }
@@ -67,8 +69,8 @@ class HandshakeTest extends TestCase {
       "\r\n",
       $c->out
     );
-    $this->assertEquals(600.0, $c->getTimeout());
-    $this->assertTrue($c->isConnected());
+    Assert::equals(600.0, $c->getTimeout());
+    Assert::true($c->isConnected());
   }
 
   #[Test]
@@ -93,7 +95,7 @@ class HandshakeTest extends TestCase {
       "This service does not listen on /chat",
       $c->out
     );
-    $this->assertFalse($c->isConnected());
+    Assert::false($c->isConnected());
   }
 
   #[Test]
@@ -119,7 +121,7 @@ class HandshakeTest extends TestCase {
       "This service does not support WebSocket version 99",
       $c->out
     );
-    $this->assertFalse($c->isConnected());
+    Assert::false($c->isConnected());
   }
 
   #[Test]
@@ -144,7 +146,7 @@ class HandshakeTest extends TestCase {
       "This service requires use of the WebSocket protocol",
       $c->out
     );
-    $this->assertFalse($c->isConnected());
+    Assert::false($c->isConnected());
   }
 
   #[Test]

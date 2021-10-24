@@ -1,10 +1,11 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
+use unittest\Assert;
 use unittest\{Expect, Test, TestCase, Values};
 use websocket\{Environment, Listener, Listeners};
 
-class ListenersTest extends TestCase {
+class ListenersTest {
   const ID = 42;
 
   /**
@@ -22,7 +23,7 @@ class ListenersTest extends TestCase {
   #[Test]
   public function cast_function() {
     $f= function($conn, $message) { };
-    $this->assertEquals($f, Listeners::cast($f));
+    Assert::equals($f, Listeners::cast($f));
   }
 
   #[Test]
@@ -30,7 +31,7 @@ class ListenersTest extends TestCase {
     $l= newinstance(Listener::class, [], [
       'message' =>  function($conn, $message) { }
     ]);
-    $this->assertEquals([$l, 'message'], Listeners::cast($l));
+    Assert::equals([$l, 'message'], Listeners::cast($l));
   }
 
   #[Test, Expect(IllegalArgumentException::class)]
@@ -51,13 +52,13 @@ class ListenersTest extends TestCase {
   #[Test]
   public function compare_to_self() {
     $fixture= $this->fixture();
-    $this->assertEquals(0, $fixture->compareTo($fixture));
+    Assert::equals(0, $fixture->compareTo($fixture));
   }
 
   #[Test]
   public function compare_to_another_instance() {
     $fixture= $this->fixture();
-    $this->assertEquals(1, $fixture->compareTo($this->fixture()));
+    Assert::equals(1, $fixture->compareTo($this->fixture()));
   }
 
   #[Test, Values([['/listen', 'listen'], ['/test', 'test'], ['/test/', 'test'], ['/test/chat', 'test'], ['/testing', 'catch-all'], ['/prod', 'catch-all'],])]
@@ -72,7 +73,7 @@ class ListenersTest extends TestCase {
       ];
     });
     $listener= $listeners->listener($path);
-    $this->assertEquals($expected, $listener(null, 'Test'));
+    Assert::equals($expected, $listener(null, 'Test'));
   }
 
   #[Test]
@@ -82,6 +83,6 @@ class ListenersTest extends TestCase {
         '/test'   => function($conn, $payload) { return 'test'; },
       ];
     });
-    $this->assertNull($listeners->listener('/prod'));
+    Assert::null($listeners->listener('/prod'));
   }
 }
