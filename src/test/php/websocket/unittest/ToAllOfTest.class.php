@@ -1,13 +1,12 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
-use test\Assert;
-use test\{Test, TestCase, Values};
+use test\{Assert, Test, Values};
 use util\URI;
 use websocket\logging\{ToAllOf, ToConsole, ToFunction};
 
 class ToAllOfTest {
-  const ID = 42;
+  const ID= 42;
 
   /** @return iterable */
   private function arguments() {

@@ -1,8 +1,7 @@
 <?php namespace websocket\unittest;
 
 use lang\{IllegalArgumentException, Throwable};
-use test\Assert;
-use test\{Test, TestCase, Values};
+use test\{Assert, Test, Values};
 use websocket\Logging;
 use websocket\logging\{ToAllOf, ToConsole, ToFunction};
 

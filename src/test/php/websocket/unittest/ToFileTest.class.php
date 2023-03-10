@@ -2,7 +2,7 @@
 
 use io\TempFile;
 use lang\IllegalArgumentException;
-use test\{After, Assert, Before, Expect, Test, TestCase};
+use test\{After, Assert, Before, Expect, Test};
 use util\URI;
 use websocket\logging\ToFile;
 

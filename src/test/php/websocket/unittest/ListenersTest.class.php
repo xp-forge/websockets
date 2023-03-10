@@ -1,8 +1,7 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
-use test\Assert;
-use test\{Expect, Test, TestCase, Values};
+use test\{Assert, Expect, Test, Values};
 use websocket\{Environment, Listener, Listeners};
 
 class ListenersTest {
