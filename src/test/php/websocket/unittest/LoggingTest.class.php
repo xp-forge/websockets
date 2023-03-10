@@ -1,8 +1,8 @@
 <?php namespace websocket\unittest;
 
 use lang\{IllegalArgumentException, Throwable};
-use unittest\Assert;
-use unittest\{Test, TestCase, Values};
+use test\Assert;
+use test\{Test, TestCase, Values};
 use websocket\Logging;
 use websocket\logging\{ToAllOf, ToConsole, ToFunction};
 
@@ -36,7 +36,7 @@ class LoggingTest {
     Assert::equals('(no logging)', (new Logging(null))->target());
   }
 
-  #[Test, Values('arguments')]
+  #[Test, Values(from: 'arguments')]
   public function log($expected, $result) {
     $logged= [];
     $log= new Logging(new ToFunction(function($client, $opcode, $result) use(&$logged) {

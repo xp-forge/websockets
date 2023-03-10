@@ -1,7 +1,7 @@
 <?php namespace websocket\unittest;
 
-use unittest\Assert;
-use unittest\{Test, TestCase, Values};
+use test\Assert;
+use test\{Test, TestCase, Values};
 use util\Bytes;
 use websocket\protocol\{Connection, Opcodes};
 

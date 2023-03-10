@@ -1,19 +1,17 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalStateException;
-use unittest\Assert;
-use unittest\{Test, TestCase, Values};
+use test\{Assert, Before, Test, Values};
 use util\{Bytes, URI};
 use websocket\logging\Sink;
 use websocket\protocol\{Connection, Messages};
 use websocket\{Dispatch, Environment, Listeners, Logging};
 
 class MessagesTest {
-  const ID = 42;
+  const ID= 42;
 
   private $log;
 
-  /** @return void */
   #[Before]
   public function setUp() {
     $this->log= new Logging(null);

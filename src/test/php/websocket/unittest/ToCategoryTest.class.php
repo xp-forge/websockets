@@ -1,8 +1,8 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
-use unittest\Assert;
-use unittest\{Test, TestCase};
+use test\Assert;
+use test\{Test, TestCase};
 use util\URI;
 use util\log\{BufferedAppender, LogCategory};
 use websocket\logging\ToCategory;
