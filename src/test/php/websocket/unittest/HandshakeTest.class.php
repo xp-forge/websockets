@@ -1,14 +1,12 @@
 <?php namespace websocket\unittest;
 
-use unittest\Assert;
-use unittest\{Test, TestCase};
+use test\{Assert, Before, Test};
 use websocket\protocol\Handshake;
 use websocket\{Dispatch, Environment, Listeners, Logging};
 
 class HandshakeTest {
   private $log;
 
-  /** @return void */
   #[Before]
   public function setUp() {
     $this->log= new Logging(null);

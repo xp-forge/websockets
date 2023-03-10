@@ -1,13 +1,12 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
-use unittest\Assert;
-use unittest\{Test, TestCase, Values};
+use test\{Assert, Test, Values};
 use util\URI;
 use websocket\logging\{ToAllOf, ToConsole, ToFunction};
 
 class ToAllOfTest {
-  const ID = 42;
+  const ID= 42;
 
   /** @return iterable */
   private function arguments() {
@@ -56,7 +55,7 @@ class ToAllOfTest {
     Assert::equals('(websocket.logging.ToConsole & websocket.logging.ToFunction)', (new ToAllOf($a, $b))->target());
   }
 
-  #[Test, Values('arguments')]
+  #[Test, Values(from: 'arguments')]
   public function logs_to_all($expected, $error) {
     $logged= ['a' => [], 'b' => []];
     $sink= new ToAllOf(

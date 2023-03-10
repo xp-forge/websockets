@@ -2,8 +2,7 @@
 
 use io\streams\{MemoryOutputStream, StringWriter};
 use lang\IllegalArgumentException;
-use unittest\Assert;
-use unittest\{Test, TestCase};
+use test\{Assert, Test};
 use util\URI;
 use websocket\logging\ToConsole;
 

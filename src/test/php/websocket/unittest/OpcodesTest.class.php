@@ -1,7 +1,6 @@
 <?php namespace websocket\unittest;
 
-use unittest\Assert;
-use unittest\{Test, TestCase, Values};
+use test\{Assert, Test, Values};
 use websocket\protocol\Opcodes;
 
 class OpcodesTest {

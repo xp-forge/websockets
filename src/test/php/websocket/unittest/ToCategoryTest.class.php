@@ -1,14 +1,13 @@
 <?php namespace websocket\unittest;
 
 use lang\IllegalArgumentException;
-use unittest\Assert;
-use unittest\{Test, TestCase};
+use test\{Assert, Test};
 use util\URI;
 use util\log\{BufferedAppender, LogCategory};
 use websocket\logging\ToCategory;
 
 class ToCategoryTest {
-  const ID = 42;
+  const ID= 42;
 
   #[Test]
   public function can_create() {
