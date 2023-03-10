@@ -3,6 +3,8 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #2: Migrate to new testing library - @thekid
+
 ## 2.0.0 / 2021-10-24
 
 * Made library compatible with XP 11 - @thekid
