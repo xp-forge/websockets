@@ -2,7 +2,7 @@
 
 use test\{Assert, Before, Test};
 use websocket\{Dispatch, Environment, Listeners, Logging};
-use xp\ws\{Events, Protocol};
+use xp\websockets\{Events, Protocol};
 
 class ProtocolTest {
   const ID= 42;
