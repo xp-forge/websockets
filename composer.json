@@ -15,7 +15,7 @@
   "require-dev" : {
     "xp-framework/test": "^1.0"
   },
-  "bin": ["bin/xp.xp-forge.ws"],
+  "bin": ["bin/xp.xp-forge.websockets.ws"],
   "autoload" : {
     "files" : ["src/main/php/autoload.php"]
   }
