@@ -1,4 +1,4 @@
-<?php namespace xp\ws;
+<?php namespace xp\websockets;
 
 class Data implements Handler {
   private $func;

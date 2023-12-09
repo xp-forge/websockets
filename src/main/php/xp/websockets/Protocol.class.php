@@ -1,7 +1,6 @@
-<?php namespace xp\ws;
+<?php namespace xp\websockets;
 
-use websocket\protocol\Handshake;
-use websocket\protocol\Messages;
+use websocket\protocol\{Handshake, Messages};
 
 class Protocol implements Handler {
   private $flow;

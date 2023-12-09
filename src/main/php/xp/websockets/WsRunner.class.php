@@ -1,12 +1,9 @@
-<?php namespace xp\ws;
+<?php namespace xp\websockets;
 
 use lang\ClassLoader;
-use peer\ServerSocket;
-use peer\Socket;
+use peer\{ServerSocket, Socket};
 use util\cmd\Console;
-use websocket\Dispatch;
-use websocket\Environment;
-use websocket\Listeners;
+use websocket\{Dispatch, Environment, Listeners};
 use xp\runtime\Help;
 
 /**
@@ -28,7 +25,7 @@ use xp\runtime\Help;
  * The server log is sent to standard output by default. It can be redirected
  * to a file via *-l /path/to/logfile.log*.
  */
-class Runner {
+class WsRunner {
 
   private static function server($address, $backlog= 10) {
     $p= strpos($address, ':', '[' === $address[0] ? strpos($address, ']') : 0);
