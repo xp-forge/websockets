@@ -3,6 +3,7 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #3: Access environment variable accessors - @thekid
 * Merged PR #2: Migrate to new testing library - @thekid
 
 ## 2.0.0 / 2021-10-24
