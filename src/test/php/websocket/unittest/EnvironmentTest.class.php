@@ -59,4 +59,21 @@ class EnvironmentTest {
   public function arguments($arguments) {
     Assert::equals($arguments, (new Environment('dev', [], $arguments))->arguments());
   }
+
+  #[Test]
+  public function env_variable() {
+    putenv('TEST=true');
+    Assert::equals('true', (new Environment('dev'))->variable('TEST'));
+  }
+
+  #[Test]
+  public function unset_variable() {
+    putenv('TEST');
+    Assert::null((new Environment('dev'))->variable('TEST'));
+  }
+
+  #[Test]
+  public function export_variable() {
+    Assert::equals('true', (new Environment('dev'))->export('TEST', 'true')->variable('TEST'));
+  }
 }

@@ -71,4 +71,31 @@ class Environment {
 
   /** @return web.Logging */
   public function logging() { return $this->logging; }
+
+  /**
+   * Returns a given environment variable
+   *
+   * @param  string $name
+   * @return ?string
+   */
+  public function variable($name) {
+    return false === ($env= getenv($name)) ? null : $env;
+  }
+
+  /**
+   * Pass a given environment variable and value. Pass NULL in value to
+   * remove this environment variable.
+   *
+   * @param  string $name
+   * @param  ?string $value
+   * @return self
+   */
+  public function export($name, $value) {
+    if (null === $value) {
+      putenv($name);
+    } else {
+      putenv($name.'='.$value);
+    }
+    return $this;
+  }
 }
