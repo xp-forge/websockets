@@ -1,6 +1,6 @@
 <?php namespace websocket\unittest;
 
-use io\{File, Files, Folder, Path};
+use io\{File, Files, Folder};
 use lang\{ElementNotFoundException, Environment as System};
 use test\{Assert, Expect, Test, Values};
 use util\{CompositeProperties, Properties, RegisteredPropertySource};
@@ -79,6 +79,6 @@ class EnvironmentTest {
 
   #[Test]
   public function temp_dir() {
-    Assert::instance(Path::class, (new Environment('dev'))->tempDir());
+    Assert::true(is_dir((new Environment('dev'))->tempDir()));
   }
 }
