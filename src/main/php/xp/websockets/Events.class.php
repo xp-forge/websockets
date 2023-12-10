@@ -5,7 +5,7 @@ use peer\Sockets;
 class Events {
   private $running= true;
   private $socket;
-  private $sockets= [], $timeout= [], $handlers= [];
+  private $select= [], $timeout= [], $handlers= [];
 
   public function __construct() {
     $this->socket= Sockets::$STREAM;
