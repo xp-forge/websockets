@@ -3,6 +3,7 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #4: Add accessor for system's temporary directory - @thekid
 * Merged PR #3: Access environment variable accessors - @thekid
 * Merged PR #2: Migrate to new testing library - @thekid
 
