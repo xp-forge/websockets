@@ -1,12 +1,11 @@
 <?php namespace websocket;
 
-use lang\IllegalArgumentException;
-use lang\Value;
+use lang\{IllegalArgumentException, Value};
 
 /**
  * Extension point for websocket listeners
  *
- * @test  xp://websocket.unittest.ListenersTest
+ * @test  websocket.unittest.ListenersTest
  */
 abstract class Listeners implements Value {
   protected $environment;
