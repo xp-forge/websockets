@@ -16,7 +16,7 @@ abstract class Listeners implements Value {
    * Creates a new listeners instance
    *
    * @param  websocket.Environment $environment
-   * @param  xp.ws.Events $events
+   * @param  xp.websockets.Events $events
    */
   public function __construct($environment, $events) {
     $this->environment= $environment;

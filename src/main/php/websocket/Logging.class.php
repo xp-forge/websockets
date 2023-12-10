@@ -1,13 +1,12 @@
 <?php namespace websocket;
 
-use websocket\logging\Sink;
-use websocket\logging\ToAllOf;
+use websocket\logging\{Sink, ToAllOf};
 
 /**
  * Logging takes care of logging to various outputs.
  *
- * @see   xp://websocket.logging.Sink
- * @test  xp://websocket.unittest.LoggingTest
+ * @see  websocket.logging.Sink
+ * @test websocket.unittest.LoggingTest
  */
 class Logging {
   private $sink;

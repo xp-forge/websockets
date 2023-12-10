@@ -1,16 +1,13 @@
 <?php namespace websocket;
 
 use lang\ElementNotFoundException;
-use util\CompositeProperties;
-use util\FilesystemPropertySource;
-use util\Objects;
-use util\PropertySource;
+use util\{CompositeProperties, FilesystemPropertySource, PropertySource, Objects};
 
 /**
  * Environment wraps profile, configuration, arguments and logging and
  * provides accessors for them.
  *
- * @test  xp://websocket.unittest.EnvironmentTest
+ * @test  websocket.unittest.EnvironmentTest
  */
 class Environment {
   private $profile, $arguments, $logging;
@@ -22,7 +19,7 @@ class Environment {
    * @param  string $profile
    * @param  (string|util.PropertySource)[] $config
    * @param  string[] $arguments
-   * @param  string|string[]|web.Logging $logging Defaults to logging to console
+   * @param  string|string[]|websocket.Logging $logging Defaults to logging to console
    */
   public function __construct($profile, $config= [], $arguments= [], $logging= '-') {
     $this->profile= $profile;
