@@ -10,7 +10,7 @@ class ListenersTest {
   /**
    * Returns a Listeners instance wth a given implementation of `serve()`.
    *
-   * @param  function(xp.ws.Events): [:var] $serve
+   * @param  function(xp.websockets.Events): [:var] $serve
    * @return web.Listeners
    */
   private function fixture($serve= null) {
