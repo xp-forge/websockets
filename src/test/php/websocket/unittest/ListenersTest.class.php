@@ -5,7 +5,7 @@ use test\{Assert, Expect, Test, Values};
 use websocket\{Environment, Listener, Listeners};
 
 class ListenersTest {
-  const ID = 42;
+  const ID= 42;
 
   /**
    * Returns a Listeners instance wth a given implementation of `serve()`.

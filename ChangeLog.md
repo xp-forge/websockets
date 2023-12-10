@@ -3,8 +3,12 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+## 2.1.0 / 2023-12-10
+
 * Merged PR #4: Add accessor for system's temporary directory - @thekid
 * Merged PR #3: Access environment variable accessors - @thekid
+* Fixed `xp ws` command to work correctly via Composer - @thekid
+* Added PHP 8.4 to test matrix - @thekid
 * Merged PR #2: Migrate to new testing library - @thekid
 
 ## 2.0.0 / 2021-10-24
