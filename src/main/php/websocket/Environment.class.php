@@ -1,5 +1,6 @@
 <?php namespace websocket;
 
+use io\Path;
 use lang\ElementNotFoundException;
 use util\{CompositeProperties, FilesystemPropertySource, PropertySource, Objects};
 
@@ -68,6 +69,17 @@ class Environment {
 
   /** @return web.Logging */
   public function logging() { return $this->logging; }
+
+  /** @return io.Path */
+  public function tempDir() {
+    return new Path(
+      $_ENV['TEMP'] ??
+      $_ENV['TMP'] ??
+      $_ENV['TMPDIR'] ??
+      $_ENV['TEMPDIR'] ??
+      sys_get_temp_dir()
+    );
+  }
 
   /**
    * Returns a given environment variable

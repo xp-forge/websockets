@@ -76,4 +76,9 @@ class EnvironmentTest {
   public function export_variable() {
     Assert::equals('true', (new Environment('dev'))->export('TEST', 'true')->variable('TEST'));
   }
+
+  #[Test]
+  public function temp_dir() {
+    Assert::true(is_dir((new Environment('dev'))->tempDir()));
+  }
 }
