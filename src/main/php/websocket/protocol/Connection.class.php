@@ -1,6 +1,7 @@
 <?php namespace websocket\protocol;
 
 use util\Bytes;
+use websocket\Listener;
 
 /**
  * Websocket connection
@@ -9,33 +10,47 @@ use util\Bytes;
  * @test  xp://websocket.unittest.ConnectionTest
  */
 class Connection {
-  const MAXLENGTH = 0x8000000;
+  const MAXLENGTH= 0x8000000;
 
-  private $socket, $id, $listener, $headers;
+  private $socket, $id, $listener, $path, $headers;
 
   /**
    * Creates a new connection
    *
    * @param  peer.Socket $socket
    * @param  int $id
-   * @param  callable $listener
+   * @param  websocket.Listener $listener
+   * @param  string $path
    * @param  [:var] $headers
    */
-  public function __construct($socket, $id, $listener, $headers= []) {
+  public function __construct($socket, $id, Listener $listener, $path= '/', $headers= []) {
     $this->socket= $socket;
     $this->id= $id;
     $this->listener= $listener;
+    $this->path= $path;
     $this->headers= $headers;
   }
 
   /** @return int */
   public function id() { return $this->id; }
 
-  /** @return callable */
+  /** @return websocket.Listener */
   public function listener() { return $this->listener; }
+
+  /** @return string */
+  public function path() { return $this->path; }
 
   /** @return [:var] */
   public function headers() { return $this->headers; }
+
+  /**
+   * Opens connection
+   * 
+   * @return void
+   */
+  public function open() {
+    $this->listener->open($this);
+  }
 
   /**
    * Invokes listener and returns its result
@@ -44,8 +59,16 @@ class Connection {
    * @return var
    */
   public function on($payload) {
-    $f= $this->listener;
-    return $f($this, $payload);
+    return $this->listener->message($this, $payload);
+  }
+
+  /**
+   * Opens connection
+   * 
+   * @return void
+   */
+  public function close() {
+    $this->listener->close($this);
   }
 
   /**

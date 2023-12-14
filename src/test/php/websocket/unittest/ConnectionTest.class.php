@@ -2,10 +2,21 @@
 
 use test\{Assert, Test, Values};
 use util\Bytes;
+use websocket\Listeners;
 use websocket\protocol\{Connection, Opcodes};
 
 class ConnectionTest {
-  const ID = 0;
+  const ID= 0;
+
+  /**
+   * Returns a listener
+   *
+   * @param  ?callable $callable
+   * @return websocket.Listener
+   */
+  private function listener($callable= null) {
+    return Listeners::cast($callable ?? function($conn, $message) { });
+  }
 
   /**
    * Receive all messages from a given input channel
@@ -14,7 +25,7 @@ class ConnectionTest {
    * @return []
    */
   private function receive($channel) {
-    $conn= new Connection($channel->connect(), self::ID, function($conn, $message) { }, []);
+    $conn= new Connection($channel->connect(), self::ID, $this->listener(), []);
     $r= [];
     foreach ($conn->receive() as $type => $message) {
       $r[]= [$type => $message];
@@ -24,23 +35,28 @@ class ConnectionTest {
 
   #[Test]
   public function can_create() {
-    new Connection(new Channel(), self::ID, function($conn, $message) { }, []);
+    new Connection(new Channel(), self::ID, $this->listener());
   }
 
   #[Test]
   public function id() {
-    Assert::equals(self::ID, (new Connection(new Channel(), self::ID, function($conn, $message) { }, []))->id());
+    Assert::equals(self::ID, (new Connection(new Channel(), self::ID, $this->listener()))->id());
   }
 
   #[Test]
-  public function listener() {
-    $listener= function($conn, $message) { };
-    Assert::equals($listener, (new Connection(new Channel(), self::ID, $listener, []))->listener());
+  public function get_listener() {
+    $listener= $this->listener();
+    Assert::equals($listener, (new Connection(new Channel(), self::ID, $listener))->listener());
+  }
+
+  #[Test, Values(['/', '/ws', '/feed/6100'])]
+  public function path($value) {
+    Assert::equals($value, (new Connection(new Channel(), self::ID, $this->listener(), $value))->path());
   }
 
   #[Test, Values([[[]], [['User-Agent' => 'Test', 'Accept' => '*/*']]])]
   public function headers($value) {
-    Assert::equals($value, (new Connection(new Channel(), self::ID, function($conn, $message) { }, $value))->headers());
+    Assert::equals($value, (new Connection(new Channel(), self::ID, $this->listener(), '/', $value))->headers());
   }
 
   #[Test]
@@ -111,7 +127,7 @@ class ConnectionTest {
   #[Test]
   public function send_string() {
     $channel= (new Channel())->connect();
-    (new Connection($channel, self::ID, function($conn, $message) { }, []))->send('Test');
+    (new Connection($channel, self::ID, $this->listener()))->send('Test');
 
     Assert::equals("\x81\x04Test", $channel->out);
   }
@@ -119,7 +135,7 @@ class ConnectionTest {
   #[Test]
   public function send_bytes() {
     $channel= (new Channel())->connect();
-    (new Connection($channel, self::ID, function($conn, $message) { }, []))->send(new Bytes('Test'));
+    (new Connection($channel, self::ID, $this->listener()))->send(new Bytes('Test'));
 
     Assert::equals("\x82\x04Test", $channel->out);
   }
@@ -128,7 +144,7 @@ class ConnectionTest {
   public function send($length, $header) {
     $string= str_repeat('*', $length);
     $channel= (new Channel())->connect();
-    (new Connection($channel, self::ID, function($conn, $message) { }, []))->send($string);
+    (new Connection($channel, self::ID, $this->listener()))->send($string);
 
     Assert::equals(new Bytes($header), new Bytes(substr($channel->out, 0, strlen($header))));
     Assert::equals(strlen($header) + $length, strlen($channel->out));
@@ -138,7 +154,7 @@ class ConnectionTest {
   public function read($length, $header) {
     $string= str_repeat('*', $length);
     $channel= (new Channel($header.$string))->connect();
-    $message= (new Connection($channel, self::ID, function($conn, $message) { }, []))->receive()->current();
+    $message= (new Connection($channel, self::ID, $this->listener()))->receive()->current();
 
     Assert::equals($length, strlen($message));
   }

@@ -36,7 +36,7 @@ abstract class Listeners implements Value {
    * Finds listener for a given path, returning NULL otherwise
    *
    * @param  string $path
-   * @return ?callable
+   * @return ?websocket.Listener
    */
   public function listener($path) {
     foreach ($this->paths as $pattern => $listener) {
@@ -49,14 +49,14 @@ abstract class Listeners implements Value {
    * Cast listeners
    *
    * @param  websocket.Listener|function(websocket.protocol.Connection, string|util.Bytes): var $arg
-   * @return callable
+   * @return websocket.Listener
    * @throws lang.IllegalArgumentException
    */
   public static function cast($arg) {
     if ($arg instanceof Listener) {
-      return [$arg, 'message'];
-    } else if (is_callable($arg)) {
       return $arg;
+    } else if (is_callable($arg)) {
+      return newinstance(Listener::class, [], ['message' => $arg]);
     } else {
       throw new IllegalArgumentException('Expected either a callable or a websocket.Listener instance, have '.typeof($arg));
     }

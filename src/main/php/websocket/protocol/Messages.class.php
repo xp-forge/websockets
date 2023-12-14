@@ -11,6 +11,10 @@ class Messages {
     $this->logging= $logging;
   }
 
+  public function start($socket, $i) {
+    $this->listeners->connections[$i]->open();
+  }
+
   public function next($socket, $i) {
     $conn= $this->listeners->connections[$i];
     foreach ($conn->receive() as $opcode => $payload) {
@@ -63,15 +67,14 @@ class Messages {
         }
       } catch (Throwable $t) {
         $this->logging->log($i, Opcodes::nameOf($opcode), $t);
-      } catch (\Throwable $t) {  // PHP 7
+      } catch (\Throwable $t) {
         $this->logging->log($i, Opcodes::nameOf($opcode), Throwable::wrap($t));
-      } catch (\Exception $e) {  // PHP 5
-        $this->logging->log($i, Opcodes::nameOf($opcode), Throwable::wrap($e));
       }
     }
   }
 
   public function end($socket, $i) {
+    $this->listeners->connections[$i]->close();
     unset($this->listeners->connections[$i]);
   }
 }

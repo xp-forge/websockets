@@ -33,7 +33,7 @@ class MessagesTest {
 
     // Simulate handshake
     $channel->connect();
-    $listeners->connections[self::ID]= new Connection($channel, self::ID, $listener, []);
+    $listeners->connections[self::ID]= new Connection($channel, self::ID, $listeners->listener('/ws'), []);
 
     return new Messages($listeners, $this->log);
   }

@@ -22,7 +22,7 @@ class ListenersTest {
   #[Test]
   public function cast_function() {
     $f= function($conn, $message) { };
-    Assert::equals($f, Listeners::cast($f));
+    Assert::instance(Listener::class, Listeners::cast($f));
   }
 
   #[Test]
@@ -30,7 +30,7 @@ class ListenersTest {
     $l= newinstance(Listener::class, [], [
       'message' =>  function($conn, $message) { }
     ]);
-    Assert::equals([$l, 'message'], Listeners::cast($l));
+    Assert::instance(Listener::class, Listeners::cast($l));
   }
 
   #[Test, Expect(IllegalArgumentException::class)]
@@ -72,7 +72,7 @@ class ListenersTest {
       ];
     });
     $listener= $listeners->listener($path);
-    Assert::equals($expected, $listener(null, 'Test'));
+    Assert::equals($expected, $listener->message(null, 'Test'));
   }
 
   #[Test]

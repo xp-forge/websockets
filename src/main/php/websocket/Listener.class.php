@@ -1,13 +1,29 @@
 <?php namespace websocket;
 
-interface Listener {
+abstract class Listener {
+
+  /**
+   * Opens connection
+   *
+   * @param  websocket.protocol.Connection $connection
+   * @return void
+   */
+  public function open($connection) { /* NOOP */ }
 
   /**
    * Listens for messages
    *
-   * @param  websocket.protocol.Connection
-   * @param  string|util.Bytes
+   * @param  websocket.protocol.Connection $connection
+   * @param  string|util.Bytes $message
    * @return var
    */
-  public function message($connection, $message);
+  public abstract function message($connection, $message);
+
+  /**
+   * Closes connection
+   *
+   * @param  websocket.protocol.Connection $connection
+   * @return void
+   */
+  public function close($connection) { /* NOOP */ }
 }
