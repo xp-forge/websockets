@@ -14,11 +14,13 @@ class Protocol implements Handler {
 
   public function open($events, $socket, $i) {
     $this->flow[$i]= $this->flow[Handshake::class];
+    $this->flow[$i]->start($socket, $i);
   }
 
   public function data($events, $socket, $i) {
     if ($next= $this->flow[$i]->next($socket, $i)) {
       $this->flow[$i]= $this->flow[$next];
+      $this->flow[$i]->start($socket, $i);
     }
   }
 

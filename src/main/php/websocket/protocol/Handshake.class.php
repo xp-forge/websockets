@@ -7,13 +7,17 @@
  * @test  xp://websocket.unittest.HandshakeTest
  */
 class Handshake {
-  const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+  const GUID= '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
   private $listeners, $logging;
 
   public function __construct($listeners, $logging) {
     $this->listeners= $listeners;
     $this->logging= $logging;
+  }
+
+  public function start($socket, $i) {
+    // NOOP
   }
 
   public function next($socket, $i) {
@@ -64,7 +68,7 @@ class Handshake {
           $accept
         ));
         $socket->setTimeout(600.0);
-        $this->listeners->connections[$i]= new Connection($socket, $i, $listener, $headers);
+        $this->listeners->connections[$i]= new Connection($socket, $i, $listener, $path, $headers);
         $this->logging->log($i, $method.' '.$path, 101);
         return Messages::class;
 
