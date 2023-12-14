@@ -3,6 +3,13 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+## 3.0.0 / ????-??-??
+
+* Merged PR #5: Make it possible to react to connections being opened and
+  closed. Implement the `websocket.Listener` class' methods *open()* and
+  *close()* respectively. These are NOOPs by default.
+  (@thekid)
+
 ## 2.1.0 / 2023-12-10
 
 * Merged PR #4: Add accessor for system's temporary directory - @thekid
