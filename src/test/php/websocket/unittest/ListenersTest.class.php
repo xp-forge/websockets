@@ -71,8 +71,16 @@ class ListenersTest {
         '/'       => function($conn, $payload) { return 'catch-all'; }
       ];
     });
-    $listener= $listeners->listener($path);
-    Assert::equals($expected, $listener->message(null, 'Test'));
+
+    Assert::equals($expected, $listeners->listener($path)->message(null, 'Test'));
+  }
+
+  #[Test, Values(['/', '/test'])]
+  public function catch_all_when_returning_listener($path) {
+    $listener= function($conn, $payload) { return 'test'; };
+    $listeners= $this->fixture(function($events) use($listener) { return $listener; });
+
+    Assert::equals('test', $listeners->listener($path)->message(null, 'Test'));
   }
 
   #[Test]

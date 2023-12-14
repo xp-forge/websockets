@@ -5,6 +5,8 @@ WebSockets change log
 
 ## 3.0.0 / ????-??-??
 
+* Made it possible to directly return a listener from `Listeners::serve()`.
+  (@thekid)
 * Merged PR #5: Make it possible to react to connections being opened and
   closed. Implement the `websocket.Listener` class' methods *open()* and
   *close()* respectively. These are NOOPs by default.

@@ -20,12 +20,20 @@ abstract class Listeners implements Value {
    */
   public function __construct($environment, $events) {
     $this->environment= $environment;
-    foreach ($this->serve($events) ?: [] as $path => $listener) {
-      if ('/' === $path) {
-        $this->paths['#.#']= self::cast($listener);
-      } else {
-        $this->paths['#^'.$path.'(/?|/.+)$#']= self::cast($listener);
+
+    $serve= $this->serve($events);
+    if (null === $serve) {
+      // NOOP
+    } else if (is_array($serve)) {
+      foreach ($serve as $path => $listener) {
+        if ('/' === $path) {
+          $this->paths['#.#']= self::cast($listener);
+        } else {
+          $this->paths['#^'.$path.'(/?|/.+)$#']= self::cast($listener);
+        }
       }
+    } else {
+      $this->paths['#.#']= self::cast($serve);
     }
   }
 
@@ -62,6 +70,16 @@ abstract class Listeners implements Value {
     }
   }
 
+  /**
+   * Returns listeners, which may be one of:
+   *
+   * - A websocket.Listener instance
+   * - A function(websocket.protocol.Connection, string|util.Bytes): var function
+   * - An associative array with the keys forming the paths and the values being listeners
+   *
+   * @param  xp.websockets.Events $events
+   * @return websocket.Listener|function(websocket.protocol.Connection, string|util.Bytes): var|[:mixed]
+   */
   public abstract function serve($events);
 
   /** @return string */
