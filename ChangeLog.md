@@ -3,7 +3,7 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
-## 3.0.0 / ????-??-??
+## 3.0.0 / 2023-12-14
 
 * Made it possible to directly return a listener from `Listeners::serve()`.
   (@thekid)
