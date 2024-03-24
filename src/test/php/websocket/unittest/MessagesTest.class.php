@@ -1,6 +1,6 @@
 <?php namespace websocket\unittest;
 
-use lang\IllegalStateException;
+use lang\{IllegalStateException, Throwable};
 use test\{Assert, Before, Test, Values};
 use util\{Bytes, URI};
 use websocket\logging\Sink;
@@ -131,12 +131,12 @@ class MessagesTest {
     $c= new Channel("\x81\x04Test");
     $this->log= new Logging(newinstance(Sink::class, [], [
       'log' => function($client, $opcode, $result) use(&$logged) {
-        $logged[]= [$client, $opcode, typeof($result)->getName()];
+        $logged[]= [$client, $opcode, $result instanceof Throwable];
       }
     ]));
     $this->fixture($c, function($conn, $message) { throw new \Exception('Test'); })->next($c, self::ID);
 
-    Assert::equals([[self::ID, 'TEXT', 'lang.XPException']], $logged);
+    Assert::equals([[self::ID, 'TEXT', true]], $logged);
   }
 
   #[Test]
