@@ -3,6 +3,10 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+## 3.1.0 / 2024-03-24
+
+* Made compatible with XP 12 - @thekid
+
 ## 3.0.0 / 2023-12-14
 
 * Made it possible to directly return a listener from `Listeners::serve()`.
