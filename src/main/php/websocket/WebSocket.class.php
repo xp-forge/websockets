@@ -165,15 +165,15 @@ class WebSocket implements Closeable {
     if (null !== $timeout && !$this->socket->canRead($timeout)) return;
     foreach ($this->conn->receive() as $opcode => $packet) {
       switch ($opcode) {
+        case Opcodes::TEXT:
+          $this->conn->on($packet);
+          yield $packet;
+          break;
+
         case Opcodes::BINARY:
           $message= new Bytes($packet);
           $this->conn->on($message);
           yield $message;
-          break;
-
-        case Opcodes::TEXT:
-          $this->conn->on($packet);
-          yield $packet;
           break;
 
         case Opcodes::PING:
