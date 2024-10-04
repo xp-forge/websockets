@@ -96,32 +96,21 @@ class ConnectionTest {
   }
 
   #[Test, Values(['', "\x81"])]
-  public function closes_connection_on_invalid_packet($bytes) {
-    $channel= (new Channel($bytes))->connect();
-    $this->receive($channel);
-
-    Assert::equals('', $channel->out);
-    Assert::false($channel->isConnected(), 'Channel closed');
+  public function closes_connection_on_empty_packet($bytes) {
+    $received= $this->receive(new Channel($bytes));
+    Assert::equals([], $received);
   }
 
   #[Test]
   public function closes_connection_on_invalid_opcode() {
-    $channel= (new Channel("\x8f\x00"))->connect();
-    $this->receive($channel);
-
-    // 0x80 | 0x08 (CLOSE), 2 bytes, pack("n", 1002)
-    Assert::equals("\x88\x02\x03\xea", $channel->out);
-    Assert::false($channel->isConnected(), 'Channel closed');
+    $received= $this->receive(new Channel("\x8f\x00"));
+    Assert::equals([[Opcodes::CLOSE => pack('n', 1002)]], $received);
   }
 
   #[Test]
   public function closes_connection_when_exceeding_max_length() {
-    $channel= (new Channel("\x81\x7f".pack('J', Connection::MAXLENGTH + 1)))->connect();
-    $this->receive($channel);
-
-    // 0x80 | 0x08 (CLOSE), 2 bytes, pack("n", 1003)
-    Assert::equals("\x88\x02\x03\xeb", $channel->out);
-    Assert::false($channel->isConnected(), 'Channel closed');
+    $received= $this->receive(new Channel("\x81\x7f".pack('J', Connection::MAXLENGTH + 1)));
+    Assert::equals([[Opcodes::CLOSE => pack('n', 1003)]], $received);
   }
 
   #[Test]
