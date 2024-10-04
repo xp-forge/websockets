@@ -17,7 +17,7 @@ class WebSocketTest {
       "\r\n".
       $payload
     ));
-    $fixture->random(fn($bytes) => str_repeat('*', $bytes));
+    $fixture->random(function($bytes) { return str_repeat('*', $bytes); });
     return $fixture;
   }
 
