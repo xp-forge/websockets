@@ -23,7 +23,7 @@ class Messages {
         switch ($opcode) {
           case Opcodes::TEXT:
             if (!preg_match('//u', $payload)) {
-              $conn->transmit(Opcodes::CLOSE, pack('n', 1007));
+              $conn->answer(Opcodes::CLOSE, pack('n', 1007));
               $this->logging->log($i, 'TEXT', 1007);
               $socket->close();
               break;
@@ -39,7 +39,7 @@ class Messages {
             break;
 
           case Opcodes::PING:  // Answer a PING frame with a PONG
-            $conn->transmit(Opcodes::PONG, $payload);
+            $conn->answer(Opcodes::PONG, $payload);
             $this->logging->log($i, 'PING', true);
             break;
 
@@ -48,21 +48,20 @@ class Messages {
 
           case Opcodes::CLOSE: // Close connection
             if ('' === $payload) {
-              $conn->transmit(Opcodes::CLOSE, pack('n', 1000));
-              $this->logging->log($i, 'CLOSE', 1000);
+              $close= ['code' => 1000];
             } else {
-              $result= unpack('ncode/a*message', $payload);
-              if (!preg_match('//u', $result['message'])) {
-                $conn->transmit(Opcodes::CLOSE, pack('n', 1007));
-                $this->logging->log($i, 'CLOSE', 1007);
-              } else if ($result['code'] > 2999 || in_array($result['code'], [1000, 1001, 1002, 1003, 1007, 1008, 1009, 1010, 1011])) {
-                $conn->transmit(Opcodes::CLOSE, $payload);
-                $this->logging->log($i, 'CLOSE', $result['code']);
+              $close= unpack('ncode/a*message', $payload);
+              if (!preg_match('//u', $close['message'])) {
+                $close= ['code' => 1007];
+              } else if ($close['code'] > 2999 || in_array($close['code'], [1000, 1001, 1002, 1003, 1007, 1008, 1009, 1010, 1011])) {
+                // Answer with client code and message
               } else {
-                $conn->transmit(Opcodes::CLOSE, pack('n', 1002));
-                $this->logging->log($i, 'CLOSE', 1002);
+                $close= ['code' => 1002];
               }
             }
+
+            $conn->answer(Opcodes::CLOSE, pack('na*', $close['code'], $close['message'] ?? ''));
+            $this->logging->log($i, 'CLOSE', $close);
             $socket->close();
             break;
         }
