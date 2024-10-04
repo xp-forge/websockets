@@ -9,6 +9,7 @@ class Channel extends Socket {
   public function __construct($in= '') {
     $this->in= $in;
     $this->out= '';
+    $this->host= 'test';
   }
 
   public function connect($timeout= 2) {
