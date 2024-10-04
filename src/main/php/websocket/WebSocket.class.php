@@ -180,6 +180,9 @@ class WebSocket implements Closeable {
           $this->conn->message(Opcodes::PONG, $packet, ($this->random)(4));
           break;
 
+        case Opcodes::PONG:  // Do not answer PONGs
+          break;
+
         case Opcodes::CLOSE:
           $close= unpack('ncode/a*message', $packet);
           $this->conn->close($close['code'], $close['message']);
