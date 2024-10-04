@@ -16,7 +16,7 @@ class Logging {
    *
    * @param  ?websocket.logging.Sink $sink
    */
-  public function __construct(Sink $sink= null) {
+  public function __construct($sink= null) {
     $this->sink= $sink;
   }
 
