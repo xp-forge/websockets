@@ -64,6 +64,17 @@ class WebSocketTest {
   public function connect() {
     $fixture= $this->fixture();
     $fixture->connect();
+
+    Assert::true($fixture->socket()->isConnected());
+  }
+
+  #[Test]
+  public function close() {
+    $fixture= $this->fixture();
+    $fixture->connect();
+    $fixture->close();
+
+    Assert::false($fixture->socket()->isConnected());
   }
 
   #[Test]
