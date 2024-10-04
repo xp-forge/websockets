@@ -1,5 +1,6 @@
 <?php namespace websocket\protocol;
 
+use Throwable as Any;
 use lang\Throwable;
 use util\Bytes;
 
@@ -67,8 +68,8 @@ class Messages {
         }
       } catch (Throwable $t) {
         $this->logging->log($i, Opcodes::nameOf($opcode), $t);
-      } catch (\Throwable $t) {
-        $this->logging->log($i, Opcodes::nameOf($opcode), Throwable::wrap($t));
+      } catch (Any $e) {
+        $this->logging->log($i, Opcodes::nameOf($opcode), Throwable::wrap($e));
       }
     }
   }
