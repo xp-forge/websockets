@@ -26,6 +26,11 @@ class WebSocketTest {
     Assert::equals($expected, (new WebSocket($url))->path());
   }
 
+  #[Test, Values([['ws://example.com', '/'], ['ws://example.com/?test=1&l=de', '/?test=1&l=de']])]
+  public function query($url, $expected) {
+    Assert::equals($expected, (new WebSocket($url))->path());
+  }
+
   #[Test]
   public function default_origin() {
     Assert::equals('localhost', (new WebSocket('ws://example.com'))->origin());

@@ -35,6 +35,7 @@ class WebSocket implements Closeable {
         $this->socket= new Socket($url['host'], $url['port'] ?? 80);
       }
       $this->path= $url['path'] ?? '/';
+      isset($url['query']) && $this->path.= '?'.$url['query'];
     }
     $this->origin= $origin;
   }
