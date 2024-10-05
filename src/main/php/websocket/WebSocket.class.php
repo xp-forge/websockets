@@ -115,11 +115,7 @@ class WebSocket implements Closeable {
     $this->conn= new Connection(
       $this->socket,
       (int)$this->socket->getHandle(),
-      $this->listener ?? new class() extends Listener {
-        public function open($connection) { }
-        public function message($connection, $message) { }
-        public function close($connection) { }
-      },
+      $this->listener,
       $this->path,
       $headers
     );

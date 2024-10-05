@@ -19,11 +19,11 @@ class Connection {
    *
    * @param  peer.Socket $socket
    * @param  int $id
-   * @param  websocket.Listener $listener
+   * @param  ?websocket.Listener $listener
    * @param  string $path
    * @param  [:var] $headers
    */
-  public function __construct($socket, $id, Listener $listener, $path= '/', $headers= []) {
+  public function __construct($socket, $id, $listener, $path= '/', $headers= []) {
     $this->socket= $socket;
     $this->id= $id;
     $this->listener= $listener;
@@ -49,7 +49,7 @@ class Connection {
    * @return void
    */
   public function open() {
-    $this->listener->open($this);
+    $this->listener && $this->listener->open($this);
   }
 
   /**
@@ -59,7 +59,7 @@ class Connection {
    * @return var
    */
   public function on($payload) {
-    return $this->listener->message($this, $payload);
+    return $this->listener ? $this->listener->message($this, $payload) : null;
   }
 
   /**
@@ -68,7 +68,7 @@ class Connection {
    * @return void
    */
   public function close() {
-    $this->listener->close($this);
+    $this->listener && $this->listener->close($this);
   }
 
   /**
