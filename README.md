@@ -61,3 +61,4 @@ See also
 --------
 
 * [WebSocket chat based on Redis queues](https://gist.github.com/thekid/7f11a62e0a57d18588694f058ebcc38a)
+* [OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime)
