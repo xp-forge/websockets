@@ -19,11 +19,11 @@ class Connection {
    *
    * @param  peer.Socket $socket
    * @param  int $id
-   * @param  websocket.Listener $listener
+   * @param  ?websocket.Listener $listener
    * @param  string $path
    * @param  [:var] $headers
    */
-  public function __construct($socket, $id, Listener $listener, $path= '/', $headers= []) {
+  public function __construct($socket, $id, $listener, $path= '/', $headers= []) {
     $this->socket= $socket;
     $this->id= $id;
     $this->listener= $listener;
@@ -49,7 +49,7 @@ class Connection {
    * @return void
    */
   public function open() {
-    $this->listener->open($this);
+    $this->listener && $this->listener->open($this);
   }
 
   /**
@@ -59,16 +59,21 @@ class Connection {
    * @return var
    */
   public function on($payload) {
-    return $this->listener->message($this, $payload);
+    return $this->listener ? $this->listener->message($this, $payload) : null;
   }
 
   /**
-   * Opens connection
+   * Closes connection
    * 
+   * @param  int $code
+   * @param  string $reason
    * @return void
    */
-  public function close() {
-    $this->listener->close($this);
+  public function close($code= 1000, $reason= '') {
+    if ($this->socket->isConnected()) {
+      $this->listener && $this->listener->close($this, $code, $reason);
+      $this->socket->close();
+    }
   }
 
   /**
@@ -92,20 +97,17 @@ class Connection {
    */
   public function receive() {
     $packets= [
-      Opcodes::TEXT    => '',
-      Opcodes::BINARY  => '',
-      Opcodes::CLOSE   => '',
-      Opcodes::PING    => '',
-      Opcodes::PONG    => '',
+      Opcodes::TEXT   => '',
+      Opcodes::BINARY => '',
+      Opcodes::CLOSE  => '',
+      Opcodes::PING   => '',
+      Opcodes::PONG   => '',
     ];
 
     $continue= [];
     do {
       $packet= $this->read(2);
-      if (strlen($packet) < 2) {
-        $this->socket->close();
-        return;
-      }
+      if (strlen($packet) < 2) return;
 
       $final= $packet[0] & "\x80";
       $opcode= $packet[0] & "\x0f";
@@ -118,8 +120,7 @@ class Connection {
 
       // Verify opcode, send protocol error if unkown
       if (!isset($packets[$opcode])) {
-        $this->transmit(Opcodes::CLOSE, pack('n', 1002));
-        $this->socket->close();
+        yield Opcodes::CLOSE => pack('n', 1002);
         return;
       }
 
@@ -133,8 +134,7 @@ class Connection {
 
       // Verify length
       if ($read > self::MAXLENGTH) {
-        $this->transmit(Opcodes::CLOSE, pack('n', 1003));
-        $this->socket->close();
+        yield Opcodes::CLOSE => pack('n', 1003);
         return;
       }
 
@@ -160,6 +160,29 @@ class Connection {
     } while ($continue);
   }
 
+  /**
+   * Sends an message
+   *
+   * @param  string $type One of the class constants TEXT | BINARY | CLOSE | PING | PONG
+   * @param  string $payload
+   * @param  string $mask 4 bytes
+   * @return void
+   */
+  public function message($type, $payload, $mask) {
+    $length= strlen($payload);
+    $data= '';
+    for ($i = 0; $i < $length; $i+= 4) {
+      $data.= $mask ^ substr($payload, $i, 4);
+    }
+
+    if ($length < 126) {
+      $this->socket->write(("\x80" | $type).("\x80" | chr($length)).$mask.$data);
+    } else if ($length < 65536) {
+      $this->socket->write(("\x80" | $type)."\xfe".pack('n', $length).$mask.$data);
+    } else {
+      $this->socket->write(("\x80" | $type)."\xff".pack('J', $length).$mask.$data);
+    }
+  }
 
   /**
    * Transmits an answer
@@ -168,7 +191,7 @@ class Connection {
    * @param  string $payload
    * @return void
    */
-  public function transmit($type, $payload) {
+  public function answer($type, $payload) {
     $length= strlen($payload);
     if ($length < 126) {
       $this->socket->write(("\x80" | $type).chr($length).$payload);
@@ -187,9 +210,9 @@ class Connection {
    */
   public function send($arg) {
     if ($arg instanceof Bytes) {
-      $this->transmit(Opcodes::BINARY, $arg);
+      $this->answer(Opcodes::BINARY, $arg);
     } else {
-      $this->transmit(Opcodes::TEXT, $arg);
+      $this->answer(Opcodes::TEXT, $arg);
     }
   }
 }

@@ -35,6 +35,19 @@ Serving Imitator(dev)[] > websocket.logging.ToConsole
 # ...
 ```
 
+To connect to this server, use the following:
+
+```php
+use util\cmd\Console;
+use websocket\WebSocket;
+
+$s= new WebSocket('ws://localhost:8081/echo';
+$s->connect();
+
+$s->send('Hello');
+Console::writeLine('<<< ', $s->receive());
+```
+
 On the JavaScript side, open the connection as follows:
 
 ```javascript
