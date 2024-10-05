@@ -3,7 +3,7 @@
 use peer\{Socket, ProtocolException};
 use test\{Assert, Expect, Test, Values};
 use util\Bytes;
-use websocket\WebSocket;
+use websocket\{WebSocket, Listener};
 
 class WebSocketTest {
 
@@ -172,5 +172,22 @@ class WebSocketTest {
       "\x8a\x81****\013",
       $fixture->socket()->out
     );
+  }
+
+  #[Test]
+  public function listening() {
+    $listener= new class() extends Listener {
+      public $events= [];
+      public function open($conn) { $this->events[]= 'open'; }
+      public function message($conn, $message) { $this->events[]= "message<{$message}>"; }
+      public function close($conn) { $this->events[]= 'close'; }
+    };
+
+    $fixture= $this->fixture("\x81\x04Test")->listening($listener);
+    $fixture->connect();
+    iterator_to_array($fixture->receive());
+    $fixture->close();
+
+    Assert::equals(['open', 'message<Test>', 'close'], $listener->events);
   }
 }
