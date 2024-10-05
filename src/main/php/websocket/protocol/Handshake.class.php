@@ -25,12 +25,12 @@ class Handshake {
     $headers= [];
     while ($line= $socket->readLine()) {
       sscanf($line, "%[^:]: %[^\r]", $header, $value);
-      $headers[$header][]= $value;
+      $headers[strtolower($header)][]= $value;
     }
 
     $date= gmdate('D, d M Y H:i:s T');
-    $host= isset($headers['Host']) ? $headers['Host'][0] : $socket->localEndpoint()->getAddress();
-    $version= isset($headers['Sec-WebSocket-Version']) ? $headers['Sec-WebSocket-Version'][0] : -1;
+    $host= $headers['host'][0] ?? $socket->localEndpoint()->getAddress();
+    $version= $headers['sec-websocket-version'][0] ?? -1;
     switch ($version) {
       case 13:
         if (null === ($listener= $this->listeners->listener($path))) {
@@ -53,7 +53,7 @@ class Handshake {
         }
 
         // Hash websocket key and well-known GUID
-        $key= $headers['Sec-WebSocket-Key'][0];
+        $key= $headers['sec-websocket-key'][0];
         $accept= base64_encode(sha1($key.self::GUID, true));
         $socket->write(sprintf(
           "HTTP/1.1 101 Switching Protocols\r\n".

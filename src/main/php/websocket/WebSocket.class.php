@@ -104,10 +104,10 @@ class WebSocket implements Closeable {
     $headers= [];
     while ($line= $this->socket->readLine()) {
       sscanf($line, "%[^:]: %[^\r]", $header, $value);
-      $headers[$header][]= $value;
+      $headers[strtolower($header)][]= $value;
     }
 
-    $accept= $headers['Sec-Websocket-Accept'][0] ?? '';
+    $accept= $headers['sec-websocket-accept'][0] ?? '';
     $expect= base64_encode(sha1($key.Handshake::GUID, true));
     if ($accept !== $expect) {
       $this->socket->close();

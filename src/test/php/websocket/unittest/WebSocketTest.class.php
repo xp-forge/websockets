@@ -13,7 +13,7 @@ class WebSocketTest {
       "HTTP/1.1 101 Switching Protocols\r\n".
       "Connection: Upgrade\r\n".
       "Upgrade: websocket\r\n".
-      "Sec-Websocket-Accept: pT25h6EVFbWDyyinkmTBvzUVxQo=\r\n".
+      "Sec-WebSocket-Accept: pT25h6EVFbWDyyinkmTBvzUVxQo=\r\n".
       "\r\n".
       $payload
     ));
@@ -69,9 +69,22 @@ class WebSocketTest {
       "HTTP/1.1 101 Switching Protocols\r\n".
       "Connection: Upgrade\r\n".
       "Upgrade: websocket\r\n".
-      "Sec-Websocket-Accept: EGUNIQA7j7p+kiqxH/TKPdu8A4g=\r\n".
+      "Sec-WebSocket-Accept: EGUNIQA7j7p+kiqxH/TKPdu8A4g=\r\n".
       "\r\n"
     ));
+    $fixture->connect();
+  }
+
+  #[Test]
+  public function lowercase_headers() {
+    $fixture= new WebSocket(new Channel(
+      "HTTP/1.1 101 Switching Protocols\r\n".
+      "connection: Upgrade\r\n".
+      "upgrade: websocket\r\n".
+      "sec-websocket-accept: pT25h6EVFbWDyyinkmTBvzUVxQo=\r\n".
+      "\r\n"
+    ));
+    $fixture->random(function($bytes) { return str_repeat('*', $bytes); });
     $fixture->connect();
   }
 
