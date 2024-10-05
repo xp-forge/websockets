@@ -3,6 +3,12 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+* **Heads up:** The `websocket.Listener`'s *close()* method now has two
+  additional parameters, *code* and *reason*, which need to be added to
+  implementations.
+  (@thekid)
+* Merged PR #6: Add WebSocket client implementation - @thekid
+
 ## 3.1.0 / 2024-03-24
 
 * Made compatible with XP 12 - @thekid
