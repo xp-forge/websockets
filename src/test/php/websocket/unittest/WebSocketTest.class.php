@@ -21,6 +21,11 @@ class WebSocketTest {
     return $fixture;
   }
 
+  #[Test, Values([['ws://example.com', '/'], ['ws://example.com/', '/'], ['ws://example.com/sub', '/sub']])]
+  public function path($url, $expected) {
+    Assert::equals($expected, (new WebSocket($url))->path());
+  }
+
   #[Test]
   public function socket_argument() {
     $s= new Socket('example.com', 8443);
