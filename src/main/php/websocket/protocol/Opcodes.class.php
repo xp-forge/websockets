@@ -28,6 +28,6 @@ class Opcodes {
       self::PONG   => 'PONG',
     ];
 
-    return isset($opcodes[$opcode]) ? $opcodes[$opcode] : sprintf('UNKNOWN(0x%02x)', ord($opcode));
+    return $opcodes[$opcode] ?? sprintf('UNKNOWN(0x%02x)', ord($opcode));
   }
 }
