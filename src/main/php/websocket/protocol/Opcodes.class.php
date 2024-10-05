@@ -7,11 +7,11 @@
  * @test  web.unittest.protocol.OpcodesTest
  */
 class Opcodes {
-  const TEXT  = "\x01";
-  const BINARY= "\x02";
-  const CLOSE = "\x08";
-  const PING  = "\x09";
-  const PONG  = "\x0a";
+  const TEXT   = "\x01";
+  const BINARY = "\x02";
+  const CLOSE  = "\x08";
+  const PING   = "\x09";
+  const PONG   = "\x0a";
 
   /**
    * Returns an opcode name for a given opcode

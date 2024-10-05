@@ -97,11 +97,11 @@ class Connection {
    */
   public function receive() {
     $packets= [
-      Opcodes::TEXT    => '',
-      Opcodes::BINARY  => '',
-      Opcodes::CLOSE   => '',
-      Opcodes::PING    => '',
-      Opcodes::PONG    => '',
+      Opcodes::TEXT   => '',
+      Opcodes::BINARY => '',
+      Opcodes::CLOSE  => '',
+      Opcodes::PING   => '',
+      Opcodes::PONG   => '',
     ];
 
     $continue= [];
