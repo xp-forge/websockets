@@ -23,7 +23,9 @@ abstract class Listener {
    * Closes connection
    *
    * @param  websocket.protocol.Connection $connection
+   * @param  int $code
+   * @param  string $reason
    * @return void
    */
-  public function close($connection) { /* NOOP */ }
+  public function close($connection, $code, $reason) { /* NOOP */ }
 }

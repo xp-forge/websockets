@@ -65,10 +65,15 @@ class Connection {
   /**
    * Closes connection
    * 
+   * @param  int $code
+   * @param  string $reason
    * @return void
    */
-  public function close() {
-    $this->listener && $this->listener->close($this);
+  public function close($code= 1000, $reason= '') {
+    if ($this->socket->isConnected()) {
+      $this->listener && $this->listener->close($this, $code, $reason);
+      $this->socket->close();
+    }
   }
 
   /**

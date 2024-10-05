@@ -186,13 +186,13 @@ class WebSocket implements Closeable {
           break;
 
         case Opcodes::CLOSE:
-          $close= unpack('ncode/a*message', $packet);
-          $this->conn->close($close['code'], $close['message']);
+          $close= unpack('ncode/a*reason', $packet);
+          $this->conn->close($close['code'], $close['reason']);
           $this->socket->close();
 
           // 1000 is a normal close, all others indicate an error
           if (1000 === $close['code']) return;
-          throw new ProtocolException('Connection closed (#'.$close['code'].'): '.$close['message']);
+          throw new ProtocolException('Connection closed (#'.$close['code'].'): '.$close['reason']);
       }
     }
   }
@@ -201,18 +201,18 @@ class WebSocket implements Closeable {
    * Closes connection
    *
    * @param  int $code
-   * @param  string $message
+   * @param  string $reason
    * @return void
    */
-  public function close($code= 1000, $message= '') {
+  public function close($code= 1000, $reason= '') {
     if (!$this->socket->isConnected()) return;
 
     try {
-      $this->conn->message(Opcodes::CLOSE, pack('n', $code).$message, ($this->random)(4));
+      $this->conn->message(Opcodes::CLOSE, pack('na*', $code, $reason), ($this->random)(4));
     } catch (Throwable $ignored) {
       // ...
     }
-    $this->conn->close($code, $message);
+    $this->conn->close($code, $reason);
     $this->socket->close();
   }
 

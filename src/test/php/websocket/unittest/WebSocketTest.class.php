@@ -180,7 +180,7 @@ class WebSocketTest {
       public $events= [];
       public function open($conn) { $this->events[]= 'open'; }
       public function message($conn, $message) { $this->events[]= "message<{$message}>"; }
-      public function close($conn) { $this->events[]= 'close'; }
+      public function close($conn, $code, $reason) { $this->events[]= "close<{$code}>"; }
     };
 
     $fixture= $this->fixture("\x81\x04Test")->listening($listener);
@@ -188,6 +188,6 @@ class WebSocketTest {
     iterator_to_array($fixture->receive());
     $fixture->close();
 
-    Assert::equals(['open', 'message<Test>', 'close'], $listener->events);
+    Assert::equals(['open', 'message<Test>', 'close<1000>'], $listener->events);
   }
 }
