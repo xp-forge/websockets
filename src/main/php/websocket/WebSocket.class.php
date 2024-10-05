@@ -42,6 +42,9 @@ class WebSocket implements Closeable {
   /** @return string */
   public function path() { return $this->path; }
 
+  /** @return bool */
+  public function connected() { return $this->socket->isConnected(); }
+
   /** @return ?peer.Socket */
   public function socket() { return $this->socket; }
 

@@ -65,7 +65,7 @@ class WebSocketTest {
     $fixture= $this->fixture();
     $fixture->connect();
 
-    Assert::true($fixture->socket()->isConnected());
+    Assert::true($fixture->connected());
   }
 
   #[Test]
@@ -74,7 +74,7 @@ class WebSocketTest {
     $fixture->connect();
     $fixture->close();
 
-    Assert::false($fixture->socket()->isConnected());
+    Assert::false($fixture->connected());
   }
 
   #[Test]
@@ -91,6 +91,15 @@ class WebSocketTest {
     $fixture->connect();
 
     Assert::equals([new Bytes('GIF89...')], iterator_to_array($fixture->receive()));
+  }
+
+  #[Test]
+  public function handle_graceful_server_close() {
+    $fixture= $this->fixture("\x88\x02\x03\xe8");
+    $fixture->connect();
+
+    Assert::equals([], iterator_to_array($fixture->receive()));
+    Assert::false($fixture->connected());
   }
 
   #[Test]
