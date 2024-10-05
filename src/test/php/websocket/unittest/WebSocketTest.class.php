@@ -97,7 +97,7 @@ class WebSocketTest {
     $fixture= $this->fixture("\x81\x04Test");
     $fixture->connect();
 
-    Assert::equals(['Test'], iterator_to_array($fixture->receive()));
+    Assert::equals('Test', $fixture->receive());
   }
 
   #[Test]
@@ -105,7 +105,7 @@ class WebSocketTest {
     $fixture= $this->fixture("\x82\x08GIF89...");
     $fixture->connect();
 
-    Assert::equals([new Bytes('GIF89...')], iterator_to_array($fixture->receive()));
+    Assert::equals(new Bytes('GIF89...'), $fixture->receive());
   }
 
   #[Test]
@@ -113,7 +113,7 @@ class WebSocketTest {
     $fixture= $this->fixture("\x88\x02\x03\xe8");
     $fixture->connect();
 
-    Assert::equals([], iterator_to_array($fixture->receive()));
+    Assert::null($fixture->receive());
     Assert::false($fixture->connected());
   }
 
@@ -160,7 +160,7 @@ class WebSocketTest {
     $fixture= $this->fixture("\x89\x01!");
     $fixture->connect();
 
-    Assert::equals([], iterator_to_array($fixture->receive()));
+    Assert::null($fixture->receive());
     Assert::equals(
       "GET / HTTP/1.1\r\n".
       "Upgrade: websocket\r\n".
@@ -185,7 +185,7 @@ class WebSocketTest {
 
     $fixture= $this->fixture("\x81\x04Test")->listening($listener);
     $fixture->connect();
-    iterator_to_array($fixture->receive());
+    $fixture->receive();
     $fixture->close();
 
     Assert::equals(['open', 'message<Test>', 'close<1000>'], $listener->events);

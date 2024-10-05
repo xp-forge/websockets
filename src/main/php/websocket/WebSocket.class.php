@@ -156,26 +156,28 @@ class WebSocket implements Closeable {
   }
 
   /**
-   * Receive messages, handling PING and CLOSE
+   * Receive message, handling PING and CLOSE
    *
-   * @return iterable
+   * @param  ?int|float $timeout
+   * @return ?string|util.Bytes
    * @throws peer.ProtocolException
    */
   public function receive($timeout= null) {
     if (!$this->socket->isConnected()) throw new ProtocolException('Not connected');
 
-    if (null !== $timeout && !$this->socket->canRead($timeout)) return;
+    if (null !== $timeout && !$this->socket->canRead($timeout)) return null;
+
+    $result= null;
     foreach ($this->conn->receive() as $opcode => $packet) {
       switch ($opcode) {
         case Opcodes::TEXT:
-          $this->conn->on($packet);
-          yield $packet;
+          $result= $packet;
+          $this->conn->on($result);
           break;
 
         case Opcodes::BINARY:
-          $message= new Bytes($packet);
-          $this->conn->on($message);
-          yield $message;
+          $result= new Bytes($packet);
+          $this->conn->on($result);
           break;
 
         case Opcodes::PING:
@@ -191,10 +193,11 @@ class WebSocket implements Closeable {
           $this->socket->close();
 
           // 1000 is a normal close, all others indicate an error
-          if (1000 === $close['code']) return;
+          if (1000 === $close['code']) return null;
           throw new ProtocolException('Connection closed (#'.$close['code'].'): '.$close['reason']);
       }
     }
+    return $result;
   }
 
   /**
