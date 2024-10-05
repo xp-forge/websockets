@@ -96,15 +96,16 @@ class WebSocket implements Closeable {
     $this->socket->write("\r\n");
 
     sscanf($this->socket->readLine(), "HTTP/%s %d %[^\r]", $version, $status, $message);
-    if (101 !== $status) {
-      $this->socket->close();
-      throw new ProtocolException('Unexpected response '.$status.' '.$message);
-    }
-
     $headers= [];
     while ($line= $this->socket->readLine()) {
       sscanf($line, "%[^:]: %[^\r]", $header, $value);
       $headers[strtolower($header)][]= $value;
+    }
+
+    if (101 !== $status) {
+      $body= ($length= $headers['content-length'][0] ?? 0) ? $this->socket->readBinary($length) : '';
+      $this->socket->close();
+      throw new ProtocolException('Unexpected response '.$status.' '.$message.($body ? ': '.$body : ''));
     }
 
     $accept= $headers['sec-websocket-accept'][0] ?? '';

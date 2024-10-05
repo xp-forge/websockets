@@ -52,7 +52,7 @@ class WebSocketTest {
     Assert::equals($expected, (new WebSocket($url))->socket()->port);
   }
 
-  #[Test, Expect(class: ProtocolException::class, message: 'Unexpected response 400 Bad Request')]
+  #[Test, Expect(class: ProtocolException::class, message: 'Unexpected response 400 Bad Request: No websocket here!')]
   public function no_websocket_to_connect_to() {
     $fixture= new WebSocket(new Channel(
       "HTTP/1.1 400 Bad Request\r\n".
