@@ -3,6 +3,7 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+* Dropped support for PHP < 7.4, see xp-framework/rfc#343 - @thekid
 * **Heads up:** The `websocket.Listener`'s *close()* method now has two
   additional parameters, *code* and *reason*, which need to be added to
   implementations.

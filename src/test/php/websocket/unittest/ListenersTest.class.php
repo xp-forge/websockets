@@ -65,10 +65,10 @@ class ListenersTest {
     $listeners= $this->fixture(function($events) {
       return [
         '/listen' => newinstance(Listener::class, [], [
-          'message' => function($conn, $payload) { return 'listen'; }
+          'message' => fn($conn, $payload) => 'listen',
         ]),
-        '/test'   => function($conn, $payload) { return 'test'; },
-        '/'       => function($conn, $payload) { return 'catch-all'; }
+        '/test'   => fn($conn, $payload) => 'test',
+        '/'       => fn($conn, $payload) => 'catch-all',
       ];
     });
 
@@ -78,7 +78,7 @@ class ListenersTest {
   #[Test, Values(['/', '/test'])]
   public function catch_all_when_returning_listener($path) {
     $listener= function($conn, $payload) { return 'test'; };
-    $listeners= $this->fixture(function($events) use($listener) { return $listener; });
+    $listeners= $this->fixture(fn($events) => $listener);
 
     Assert::equals('test', $listeners->listener($path)->message(null, 'Test'));
   }
@@ -87,7 +87,7 @@ class ListenersTest {
   public function no_catch_all() {
     $listeners= $this->fixture(function($events) {
       return [
-        '/test'   => function($conn, $payload) { return 'test'; },
+        '/test' => fn($conn, $payload) => 'test',
       ];
     });
     Assert::null($listeners->listener('/prod'));

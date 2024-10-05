@@ -17,7 +17,7 @@ class WebSocketTest {
       "\r\n".
       $payload
     ));
-    $fixture->random(function($bytes) { return str_repeat('*', $bytes); });
+    $fixture->random(fn($bytes) => str_repeat('*', $bytes));
     return $fixture;
   }
 
@@ -84,7 +84,7 @@ class WebSocketTest {
       "sec-websocket-accept: pT25h6EVFbWDyyinkmTBvzUVxQo=\r\n".
       "\r\n"
     ));
-    $fixture->random(function($bytes) { return str_repeat('*', $bytes); });
+    $fixture->random(fn($bytes) => str_repeat('*', $bytes));
     $fixture->connect();
   }
 
@@ -135,9 +135,7 @@ class WebSocketTest {
     $fixture= $this->fixture("\x88\x02\x03\xea");
     $fixture->connect();
 
-    Assert::throws(ProtocolException::class, function() use($fixture) {
-      $fixture->receive();
-    });
+    Assert::throws(ProtocolException::class, fn() => $fixture->receive());
     Assert::false($fixture->connected());
   }
 
