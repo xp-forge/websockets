@@ -118,6 +118,17 @@ class WebSocketTest {
   }
 
   #[Test]
+  public function handle_server_error() {
+    $fixture= $this->fixture("\x88\x02\x03\xea");
+    $fixture->connect();
+
+    Assert::throws(ProtocolException::class, function() use($fixture) {
+      $fixture->receive();
+    });
+    Assert::false($fixture->connected());
+  }
+
+  #[Test]
   public function send_text() {
     $fixture= $this->fixture();
     $fixture->connect();
