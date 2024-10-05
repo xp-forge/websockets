@@ -36,9 +36,7 @@ class HandshakeTest {
    * @throws unittest.AssertionFailedError
    */
   private function assertHttp($expected, $out) {
-    if (!preg_match('#^'.$expected.'$#m', $out)) {
-      $this->fail('=~', $out, $expected);
-    }
+    Assert::matches('#^'.$expected.'$#m', $out);
   }
 
   #[Test]
