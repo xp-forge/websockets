@@ -27,6 +27,16 @@ class WebSocketTest {
   }
 
   #[Test]
+  public function default_origin() {
+    Assert::equals('localhost', (new WebSocket('ws://example.com'))->origin());
+  }
+
+  #[Test]
+  public function origin() {
+    Assert::equals('example.com', (new WebSocket('ws://example.com', 'example.com'))->origin());
+  }
+
+  #[Test]
   public function socket_argument() {
     $s= new Socket('example.com', 8443);
     Assert::equals($s, (new WebSocket($s))->socket());

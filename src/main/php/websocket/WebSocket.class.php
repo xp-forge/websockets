@@ -39,14 +39,17 @@ class WebSocket implements Closeable {
     $this->origin= $origin;
   }
 
+  /** @return peer.Socket */
+  public function socket() { return $this->socket; }
+
   /** @return string */
   public function path() { return $this->path; }
 
+  /** @return string */
+  public function origin() { return $this->origin; }
+
   /** @return bool */
   public function connected() { return $this->socket->isConnected(); }
-
-  /** @return peer.Socket */
-  public function socket() { return $this->socket; }
 
   /** @param function(int): string */
   public function random($function) {
