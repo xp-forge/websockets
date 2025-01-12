@@ -209,7 +209,6 @@ class WebSocket implements Closeable {
           $close= unpack('ncode/a*reason', $packet);
           $this->conn->close($close['code'], $close['reason']);
           $this->conn= null;
-          $this->socket->close();
 
           // 1000 is a normal close, all others indicate an error
           if (1000 === $close['code']) return null;
@@ -237,7 +236,6 @@ class WebSocket implements Closeable {
 
     $this->conn->close($code, $reason);
     $this->conn= null;
-    $this->socket->close();
   }
 
   /** Destructor - ensures connection is closed */
