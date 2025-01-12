@@ -11,7 +11,7 @@ use websocket\protocol\{Connection, Handshake, Opcodes};
  * @test  websocket.unittest.WebSocketTest
  */
 class WebSocket implements Closeable {
-  private $socket, $path, $origin;
+  private $socket, $path, $headers;
   private $conn= null;
   private $listener= null;
   private $random= 'random_bytes';
@@ -20,14 +20,16 @@ class WebSocket implements Closeable {
    * Creates a new instance
    *
    * @param  peer.Socket|string $endpoint, e.g. "wss://example.com"
-   * @param  string $origin
+   * @param  ?string $path
    */
-  public function __construct($endpoint, $origin= 'localhost') {
+  public function __construct($endpoint, $path= null) {
     if ($endpoint instanceof Socket) {
       $this->socket= $endpoint;
+      $this->headers= ['Host' => $this->socket->host];
       $this->path= '/';
     } else {
       $url= parse_url($endpoint);
+      $this->headers= ['Host' => $url['host']];
       if ('wss' === $url['scheme']) {
         $this->socket= new CryptoSocket($url['host'], $url['port'] ?? 443);
         $this->socket->cryptoImpl= STREAM_CRYPTO_METHOD_ANY_CLIENT;
@@ -37,7 +39,16 @@ class WebSocket implements Closeable {
       $this->path= $url['path'] ?? '/';
       isset($url['query']) && $this->path.= '?'.$url['query'];
     }
-    $this->origin= $origin;
+
+    // BC: Older versions accepted origin as second parameter
+    if (null === $path) {
+      // NOOP
+    } else if ('/' === $path[0] ?? null) {
+      $this->path= $path;
+    } else {
+      $this->path= '/';
+      $this->headers['Origin']= $path;
+    }
   }
 
   /** @return peer.Socket */
@@ -46,8 +57,13 @@ class WebSocket implements Closeable {
   /** @return string */
   public function path() { return $this->path; }
 
-  /** @return string */
-  public function origin() { return $this->origin; }
+  /**
+   * Returns origin set via constructor
+   *
+   * @deprecated Pass the origin to `connect()` instead!
+   * @return ?string
+   */
+  public function origin() { return $this->headers['Origin'] ?? null; }
 
   /** @return bool */
   public function connected() { return null !== $this->conn; }
@@ -80,7 +96,6 @@ class WebSocket implements Closeable {
     if ($this->conn) return;
 
     $key= base64_encode(($this->random)(16));
-    $headers+= ['Host' => $this->socket->host, 'Origin' => $this->origin];
     $this->socket->isConnected() || $this->socket->connect();
     $this->socket->write(
       "GET {$this->path} HTTP/1.1\r\n".
@@ -89,7 +104,7 @@ class WebSocket implements Closeable {
       "Sec-WebSocket-Version: 13\r\n".
       "Connection: Upgrade\r\n"
     );
-    foreach ($headers as $name => $values) {
+    foreach ($headers + $this->headers as $name => $values) {
       foreach ((array)$values as $value) {
         $this->socket->write("{$name}: {$value}\r\n");
       }
@@ -194,7 +209,6 @@ class WebSocket implements Closeable {
           $close= unpack('ncode/a*reason', $packet);
           $this->conn->close($close['code'], $close['reason']);
           $this->conn= null;
-          $this->socket->close();
 
           // 1000 is a normal close, all others indicate an error
           if (1000 === $close['code']) return null;
@@ -222,7 +236,6 @@ class WebSocket implements Closeable {
 
     $this->conn->close($code, $reason);
     $this->conn= null;
-    $this->socket->close();
   }
 
   /** Destructor - ensures connection is closed */

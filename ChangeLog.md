@@ -3,8 +3,14 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
-* Fix "Call to a member function message() on null" errors when using an
-  already connected socket in the `WebSocket` constructor.
+* **Heads up**: Deprecated passing origin to `WebSocket` constructor. It
+  should be passed inside the headers when calling *connect()*.
+  (@thekid)
+* Merged PR #7: Added ability to pass path and query string to `WebSocket`
+  constructor
+  (@thekid)
+* Fixed "Call to a member function message() on null" errors when using
+  an already connected socket in the `WebSocket` constructor.
   (@thekid)
 
 ## 4.0.0 / 2024-10-05
