@@ -3,6 +3,8 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+## 4.1.0 / 2025-01-12
+
 * **Heads up**: Deprecated passing origin to `WebSocket` constructor. It
   should be passed inside the headers when calling *connect()*.
   (@thekid)
