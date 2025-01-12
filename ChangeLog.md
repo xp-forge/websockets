@@ -5,6 +5,7 @@ WebSockets change log
 
 ## 4.1.0 / 2025-01-12
 
+* Added support for `xp-forge/uri` version 3.0+ - @thekid
 * **Heads up**: Deprecated passing origin to `WebSocket` constructor. It
   should be passed inside the headers when calling *connect()*.
   (@thekid)
