@@ -180,7 +180,7 @@ class WebSocketTest {
   #[Test]
   public function sends_headers() {
     $fixture= $this->fixture();
-    $fixture->connect(['Origin' => 'example.com', 'Sec-WebSocket-Protocol' => 'wamp']);
+    $fixture->connect(['Origin' => 'example.com', 'Sec-WebSocket-Protocol' => ['wamp', 'soap']]);
 
     Assert::equals(
       "GET / HTTP/1.1\r\n".
@@ -190,6 +190,7 @@ class WebSocketTest {
       "Connection: Upgrade\r\n".
       "Origin: example.com\r\n".
       "Sec-WebSocket-Protocol: wamp\r\n".
+      "Sec-WebSocket-Protocol: soap\r\n".
       "Host: test\r\n\r\n",
       $fixture->socket()->out
     );
