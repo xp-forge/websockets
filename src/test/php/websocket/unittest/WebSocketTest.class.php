@@ -31,10 +31,28 @@ class WebSocketTest {
     Assert::equals($expected, (new WebSocket($url))->path());
   }
 
+  /** @deprecated */
+  #[Test]
+  public function default_origin() {
+    Assert::null((new WebSocket('ws://example.com'))->origin());
+  }
+
+  /** @deprecated */
+  #[Test]
+  public function origin_via_constructor() {
+    Assert::equals('example.com', (new WebSocket('ws://example.com', 'example.com'))->origin());
+  }
+
   #[Test]
   public function socket_argument() {
     $s= new Socket('example.com', 8443);
     Assert::equals($s, (new WebSocket($s))->socket());
+  }
+
+  #[Test, Values([[null, '/'], ['/', '/'], ['/sub', '/sub']])]
+  public function socket_path($path, $expected) {
+    $s= new Socket('example.com', 8443);
+    Assert::equals($expected, (new WebSocket($s, $path))->path());
   }
 
   #[Test, Values([['ws://example.com', 80], ['wss://example.com', 443]])]
