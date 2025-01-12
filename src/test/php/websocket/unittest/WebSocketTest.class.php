@@ -32,16 +32,6 @@ class WebSocketTest {
   }
 
   #[Test]
-  public function default_origin() {
-    Assert::equals('localhost', (new WebSocket('ws://example.com'))->origin());
-  }
-
-  #[Test]
-  public function origin() {
-    Assert::equals('example.com', (new WebSocket('ws://example.com', 'example.com'))->origin());
-  }
-
-  #[Test]
   public function socket_argument() {
     $s= new Socket('example.com', 8443);
     Assert::equals($s, (new WebSocket($s))->socket());
@@ -154,6 +144,40 @@ class WebSocketTest {
   }
 
   #[Test]
+  public function handshake() {
+    $fixture= $this->fixture();
+    $fixture->connect();
+
+    Assert::equals(
+      "GET / HTTP/1.1\r\n".
+      "Upgrade: websocket\r\n".
+      "Sec-WebSocket-Key: KioqKioqKioqKioqKioqKg==\r\n".
+      "Sec-WebSocket-Version: 13\r\n".
+      "Connection: Upgrade\r\n".
+      "Host: test\r\n\r\n",
+      $fixture->socket()->out
+    );
+  }
+
+  #[Test]
+  public function sends_headers() {
+    $fixture= $this->fixture();
+    $fixture->connect(['Origin' => 'example.com', 'Sec-WebSocket-Protocol' => 'wamp']);
+
+    Assert::equals(
+      "GET / HTTP/1.1\r\n".
+      "Upgrade: websocket\r\n".
+      "Sec-WebSocket-Key: KioqKioqKioqKioqKioqKg==\r\n".
+      "Sec-WebSocket-Version: 13\r\n".
+      "Connection: Upgrade\r\n".
+      "Origin: example.com\r\n".
+      "Sec-WebSocket-Protocol: wamp\r\n".
+      "Host: test\r\n\r\n",
+      $fixture->socket()->out
+    );
+  }
+
+  #[Test]
   public function send_text() {
     $fixture= $this->fixture();
     $fixture->connect();
@@ -165,8 +189,7 @@ class WebSocketTest {
       "Sec-WebSocket-Key: KioqKioqKioqKioqKioqKg==\r\n".
       "Sec-WebSocket-Version: 13\r\n".
       "Connection: Upgrade\r\n".
-      "Host: test\r\n".
-      "Origin: localhost\r\n\r\n".
+      "Host: test\r\n\r\n".
       "\x81\x84****\176\117\131\136",
       $fixture->socket()->out
     );
@@ -184,8 +207,7 @@ class WebSocketTest {
       "Sec-WebSocket-Key: KioqKioqKioqKioqKioqKg==\r\n".
       "Sec-WebSocket-Version: 13\r\n".
       "Connection: Upgrade\r\n".
-      "Host: test\r\n".
-      "Origin: localhost\r\n\r\n".
+      "Host: test\r\n\r\n".
       "\x82\x88****\155\143\154\022\023\004\004\004",
       $fixture->socket()->out
     );
@@ -203,8 +225,7 @@ class WebSocketTest {
       "Sec-WebSocket-Key: KioqKioqKioqKioqKioqKg==\r\n".
       "Sec-WebSocket-Version: 13\r\n".
       "Connection: Upgrade\r\n".
-      "Host: test\r\n".
-      "Origin: localhost\r\n\r\n".
+      "Host: test\r\n\r\n".
       "\x8a\x81****\013",
       $fixture->socket()->out
     );
