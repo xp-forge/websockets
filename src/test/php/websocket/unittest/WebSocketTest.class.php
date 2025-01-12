@@ -49,7 +49,7 @@ class WebSocketTest {
     Assert::equals($s, (new WebSocket($s))->socket());
   }
 
-  #[Test, Values([[null, '/'], ['/', '/'], ['/sub', '/sub']])]
+  #[Test, Values([[null, '/'], ['/', '/'], ['/sub', '/sub'], ['/?test=1&l=de', '/?test=1&l=de']])]
   public function socket_path($path, $expected) {
     $s= new Socket('example.com', 8443);
     Assert::equals($expected, (new WebSocket($s, $path))->path());
