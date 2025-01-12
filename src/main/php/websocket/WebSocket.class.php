@@ -50,7 +50,7 @@ class WebSocket implements Closeable {
   public function origin() { return $this->origin; }
 
   /** @return bool */
-  public function connected() { return $this->socket->isConnected(); }
+  public function connected() { return null !== $this->conn; }
 
   /** @param function(int): string */
   public function random($function) {
@@ -77,11 +77,11 @@ class WebSocket implements Closeable {
    * @return void
    */
   public function connect($headers= []) {
-    if ($this->socket->isConnected()) return;
+    if ($this->conn) return;
 
     $key= base64_encode(($this->random)(16));
     $headers+= ['Host' => $this->socket->host, 'Origin' => $this->origin];
-    $this->socket->connect();
+    $this->socket->isConnected() || $this->socket->connect();
     $this->socket->write(
       "GET {$this->path} HTTP/1.1\r\n".
       "Upgrade: websocket\r\n".
@@ -135,7 +135,7 @@ class WebSocket implements Closeable {
    * @throws peer.ProtocolException
    */
   public function ping($payload= '') {
-    if (!$this->socket->isConnected()) throw new ProtocolException('Not connected');
+    if (!$this->conn) throw new ProtocolException('Not connected');
 
     $this->conn->message(Opcodes::PING, $payload, ($this->random)(4));
   }
@@ -148,7 +148,7 @@ class WebSocket implements Closeable {
    * @throws peer.ProtocolException
    */
   public function send($message) {
-    if (!$this->socket->isConnected()) throw new ProtocolException('Not connected');
+    if (!$this->conn) throw new ProtocolException('Not connected');
 
     if ($message instanceof Bytes) {
       $this->conn->message(Opcodes::BINARY, $message, ($this->random)(4));
@@ -165,12 +165,13 @@ class WebSocket implements Closeable {
    * @throws peer.ProtocolException
    */
   public function receive($timeout= null) {
-    if (!$this->socket->isConnected()) throw new ProtocolException('Not connected');
+    if (!$this->conn) throw new ProtocolException('Not connected');
 
     if (null !== $timeout && !$this->socket->canRead($timeout)) return null;
 
     $result= null;
     foreach ($this->conn->receive() as $opcode => $packet) {
+      // echo "<<< ", Opcodes::nameOf($opcode), " -> ", addcslashes($packet, "\0..\37!\177..\377"), "\n";
       switch ($opcode) {
         case Opcodes::TEXT:
           $result= $packet;
@@ -192,6 +193,8 @@ class WebSocket implements Closeable {
         case Opcodes::CLOSE:
           $close= unpack('ncode/a*reason', $packet);
           $this->conn->close($close['code'], $close['reason']);
+          $this->conn= null;
+          $this->socket->close();
 
           // 1000 is a normal close, all others indicate an error
           if (1000 === $close['code']) return null;
@@ -209,14 +212,16 @@ class WebSocket implements Closeable {
    * @return void
    */
   public function close($code= 1000, $reason= '') {
-    if (!$this->socket->isConnected()) return;
+    if (!$this->conn) return;
 
     try {
       $this->conn->message(Opcodes::CLOSE, pack('na*', $code, $reason), ($this->random)(4));
     } catch (Throwable $ignored) {
       // ...
     }
+
     $this->conn->close($code, $reason);
+    $this->conn= null;
     $this->socket->close();
   }
 

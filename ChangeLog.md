@@ -3,6 +3,10 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+* Fix "Call to a member function message() on null" errors when using an
+  already connected socket in the `WebSocket` constructor.
+  (@thekid)
+
 ## 4.0.0 / 2024-10-05
 
 * Dropped support for PHP < 7.4, see xp-framework/rfc#343 - @thekid
