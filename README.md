@@ -41,7 +41,7 @@ To connect to this server, use the following:
 use util\cmd\Console;
 use websocket\WebSocket;
 
-$s= new WebSocket('ws://localhost:8081/echo';
+$s= new WebSocket('ws://localhost:8081/echo');
 $s->connect();
 
 $s->send('Hello');
