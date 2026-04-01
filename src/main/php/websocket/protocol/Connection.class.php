@@ -59,10 +59,11 @@ class Connection {
    * Returns a named parameter, or NULL if it does not exist.
    *
    * @param  string $name
+   * @param  var $default
    * @return var
    */
-  public function param($name) {
-    return $this->params[$name] ?? null;
+  public function param($name, $default= null) {
+    return $this->params[$name] ?? $default;
   }
 
   /**

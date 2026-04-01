@@ -69,7 +69,10 @@ class ConnectionTest {
 
   #[Test]
   public function non_existant_param() {
-    Assert::null((new Connection(new Channel(), self::ID, $this->listener(), '?for=test'))->param('non-existant'));
+    $conn= new Connection(new Channel(), self::ID, $this->listener(), '?for=test');
+
+    Assert::null($conn->param('non-existant'));
+    Assert::equals('default', $conn->param('non-existant', 'default'));
   }
 
   #[Test]
