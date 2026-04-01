@@ -3,6 +3,8 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+* Added PHP 8.5 and 8.6 to test matrix - @thekid
+
 ## 4.1.0 / 2025-01-12
 
 * Added support for `xp-forge/uri` version 3.0+ - @thekid
