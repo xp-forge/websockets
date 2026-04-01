@@ -25,7 +25,7 @@ class ConnectionTest {
    * @return []
    */
   private function receive($channel) {
-    $conn= new Connection($channel->connect(), self::ID, $this->listener(), []);
+    $conn= new Connection($channel->connect(), self::ID, $this->listener());
     $r= [];
     foreach ($conn->receive() as $type => $message) {
       $r[]= [$type => $message];
@@ -52,6 +52,35 @@ class ConnectionTest {
   #[Test, Values(['/', '/ws', '/feed/6100'])]
   public function path($value) {
     Assert::equals($value, (new Connection(new Channel(), self::ID, $this->listener(), $value))->path());
+  }
+
+  #[Test]
+  public function path_does_not_contain_params() {
+    Assert::equals('/', (new Connection(new Channel(), self::ID, $this->listener(), '/?for=test'))->path());
+  }
+
+  #[Test, Values(['/?for=test', '/ws?for=test', '/feed/6100?for=test'])]
+  public function params($value) {
+    $conn= new Connection(new Channel(), self::ID, $this->listener(), $value);
+
+    Assert::equals('test', $conn->param('for'));
+    Assert::equals(['for' => 'test'], $conn->params());
+  }
+
+  #[Test]
+  public function non_existant_param() {
+    $conn= new Connection(new Channel(), self::ID, $this->listener(), '?for=test');
+
+    Assert::null($conn->param('non-existant'));
+    Assert::equals('default', $conn->param('non-existant', 'default'));
+  }
+
+  #[Test]
+  public function array_param() {
+    $conn= new Connection(new Channel(), self::ID, $this->listener(), '?for[]=a&for[]=b');
+
+    Assert::equals(['a', 'b'], $conn->param('for'));
+    Assert::equals(['for' => ['a', 'b']], $conn->params());
   }
 
   #[Test, Values([[[]], [['User-Agent' => 'Test', 'Accept' => '*/*']]])]
