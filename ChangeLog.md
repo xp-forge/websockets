@@ -3,6 +3,9 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+## 4.2.0 / 2025-04-01
+
+* Merged PR #8: Add parameter accessors to `Connection` - @thekid
 * Added PHP 8.5 and 8.6 to test matrix - @thekid
 
 ## 4.1.0 / 2025-01-12
