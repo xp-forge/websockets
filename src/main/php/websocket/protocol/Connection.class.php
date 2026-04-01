@@ -12,7 +12,7 @@ use websocket\Listener;
 class Connection {
   const MAXLENGTH= 0x8000000;
 
-  private $socket, $id, $listener, $path, $headers;
+  private $socket, $id, $listener, $path, $params, $headers;
 
   /**
    * Creates a new connection
@@ -27,7 +27,16 @@ class Connection {
     $this->socket= $socket;
     $this->id= $id;
     $this->listener= $listener;
-    $this->path= $path;
+
+    $p= strpos($path, '?');
+    if (false === $p) {
+      $this->path= $path;
+      $this->params= [];
+    } else {
+      $this->path= substr($path, 0, $p);
+      parse_str(substr($path, $p + 1), $this->params);
+    }
+
     $this->headers= $headers;
   }
 
@@ -39,6 +48,9 @@ class Connection {
 
   /** @return string */
   public function path() { return $this->path; }
+
+  /** @return [:var] */
+  public function params() { return $this->params; }
 
   /** @return [:var] */
   public function headers() { return $this->headers; }

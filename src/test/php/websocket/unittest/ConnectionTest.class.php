@@ -25,7 +25,7 @@ class ConnectionTest {
    * @return []
    */
   private function receive($channel) {
-    $conn= new Connection($channel->connect(), self::ID, $this->listener(), []);
+    $conn= new Connection($channel->connect(), self::ID, $this->listener());
     $r= [];
     foreach ($conn->receive() as $type => $message) {
       $r[]= [$type => $message];
@@ -52,6 +52,24 @@ class ConnectionTest {
   #[Test, Values(['/', '/ws', '/feed/6100'])]
   public function path($value) {
     Assert::equals($value, (new Connection(new Channel(), self::ID, $this->listener(), $value))->path());
+  }
+
+  #[Test]
+  public function path_does_not_contain_params() {
+    Assert::equals('/', (new Connection(new Channel(), self::ID, $this->listener(), '/?for=test'))->path());
+  }
+
+  #[Test, Values(['/?for=test', '/ws?for=test', '/feed/6100?for=test'])]
+  public function params($value) {
+    Assert::equals(['for' => 'test'], (new Connection(new Channel(), self::ID, $this->listener(), $value))->params());
+  }
+
+  #[Test]
+  public function array_param() {
+    Assert::equals(
+      ['for' => ['a', 'b']],
+      (new Connection(new Channel(), self::ID, $this->listener(), '?for[]=a&for[]=b'))->params()
+      );
   }
 
   #[Test, Values([[[]], [['User-Agent' => 'Test', 'Accept' => '*/*']]])]
