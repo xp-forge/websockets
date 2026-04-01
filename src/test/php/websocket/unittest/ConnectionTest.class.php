@@ -61,15 +61,23 @@ class ConnectionTest {
 
   #[Test, Values(['/?for=test', '/ws?for=test', '/feed/6100?for=test'])]
   public function params($value) {
-    Assert::equals(['for' => 'test'], (new Connection(new Channel(), self::ID, $this->listener(), $value))->params());
+    $conn= new Connection(new Channel(), self::ID, $this->listener(), $value);
+
+    Assert::equals('test', $conn->param('for'));
+    Assert::equals(['for' => 'test'], $conn->params());
+  }
+
+  #[Test]
+  public function non_existant_param() {
+    Assert::null((new Connection(new Channel(), self::ID, $this->listener(), '?for=test'))->param('non-existant'));
   }
 
   #[Test]
   public function array_param() {
-    Assert::equals(
-      ['for' => ['a', 'b']],
-      (new Connection(new Channel(), self::ID, $this->listener(), '?for[]=a&for[]=b'))->params()
-      );
+    $conn= new Connection(new Channel(), self::ID, $this->listener(), '?for[]=a&for[]=b');
+
+    Assert::equals(['a', 'b'], $conn->param('for'));
+    Assert::equals(['for' => ['a', 'b']], $conn->params());
   }
 
   #[Test, Values([[[]], [['User-Agent' => 'Test', 'Accept' => '*/*']]])]

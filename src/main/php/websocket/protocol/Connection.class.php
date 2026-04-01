@@ -56,6 +56,16 @@ class Connection {
   public function headers() { return $this->headers; }
 
   /**
+   * Returns a named parameter, or NULL if it does not exist.
+   *
+   * @param  string $name
+   * @return var
+   */
+  public function param($name) {
+    return $this->params[$name] ?? null;
+  }
+
+  /**
    * Opens connection
    * 
    * @return void
