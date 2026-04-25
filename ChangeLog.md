@@ -3,6 +3,10 @@ WebSockets change log
 
 ## ?.?.? / ????-??-??
 
+## 4.3.0 / 2026-04-25
+
+* Made compatible with `xp-framework/networking` version 11.0 - @thekid
+
 ## 4.2.0 / 2025-04-01
 
 * Merged PR #8: Add parameter accessors to `Connection` - @thekid
