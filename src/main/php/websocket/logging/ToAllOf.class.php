@@ -3,7 +3,7 @@
 /**
  * Log sink which logs to all given sinks
  *
- * @test  xp://websocket.unittest.logging.ToAllOfTest
+ * @test  websocket.unittest.logging.ToAllOfTest
  */
 class ToAllOf extends Sink {
   private $sinks= [];

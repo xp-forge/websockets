@@ -5,7 +5,7 @@ use util\log\LogCategory;
 /**
  * Base class for all log sinks
  *
- * @test  xp://websocket.unittest.SinkTest
+ * @test  websocket.unittest.SinkTest
  */
 abstract class Sink {
 

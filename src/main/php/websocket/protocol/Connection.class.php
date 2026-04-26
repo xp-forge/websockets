@@ -7,7 +7,7 @@ use websocket\Listener;
  * Websocket connection
  *
  * @see   https://tools.ietf.org/html/rfc6455
- * @test  xp://websocket.unittest.ConnectionTest
+ * @test  websocket.unittest.ConnectionTest
  */
 class Connection {
   const MAXLENGTH= 0x8000000;
