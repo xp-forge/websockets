@@ -86,7 +86,7 @@ abstract class Listeners implements Value {
   public function toString() { return nameof($this).'('.$this->environment->profile().')'; }
 
   /** @return string */
-  public function hashCode() { return spl_object_hash($this); }
+  public function hashCode() { return spl_object_id($this); }
 
   /**
    * Comparison
